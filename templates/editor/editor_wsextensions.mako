@@ -5,7 +5,7 @@
 ## NOTE: This file is included in editor.mako via a mako include.
 
 ## The product version
-WSEXTENSIONS_VERSIONS = "1.3";
+WSEXTENSIONS_VERSIONS = "1.4";
 
 ## The JSONP URI endpoint for the Suggestion Engine Web Service
 ## @author Michael Cotterell <mepcotterell@gmail.com>
@@ -75,17 +75,114 @@ function wsextensions_show_documentation(node, name) {
 } // wsextensions_show_documentation
 $.wsextensions_show_documentation = wsextensions_show_documentation
 
-function wsextensions_render_documentation(response) {
+## Handler to show suggestion type help information
+$('#suggestion-type-help').click(function() {
+    var out = "The Service Suggestion Engine (SSE) provides three types of service suggestion.";
+    show_modal( "Help: Types of Service Suggestion", out, { "Close" : hide_modal } );
+});
 
-    //alert("here");
+## Handler to show goal help information
+$('#suggestion-goal-help').click(function() {
+    var out = "<p>The Service Suggestion Engine (SSE) allows you to specify a goal that you would like service suggestions to fulfill. This goal can be expressed in two ways:</p> <p>test</p><p>testing</p>";
+    show_modal( "Help: Service Suggestion Goals", out, { "Close" : hide_modal } );
+});
+
+## Handler for displaying optional settings
+$('#suggestionEngineAdvancedOptionsToggle').click(wsextensions_toggle_advanced_show);
+
+function wsextensions_toggle_advanced_show () {
+    $('#suggestionEngineAdvancedOptionsToggle').click(wsextensions_toggle_advanced_hide);
+    $('#suggestionEngineAdvancedOptionsToggle').html('[-]');
+    $('#suggestion-settings-optional').show();
+}
+
+function wsextensions_toggle_advanced_hide () {
+    $('#suggestionEngineAdvancedOptionsToggle').click(wsextensions_toggle_advanced_show);
+    $('#suggestionEngineAdvancedOptionsToggle').html('[+]');
+    $('#suggestion-settings-optional').hide();
+}
+
+## Handlers for toggling settings sections
+$('#suggestion-type-toggle').click(wsextensions_toggle_settings_type_hide);
+
+function wsextensions_toggle_settings_type_show() {
+    $('#suggestion-type-toggle').click(wsextensions_toggle_settings_type_hide);
+    $('#suggestion-type-toggle').html('[-]');
+    $('#suggestion-settings-type').show();
+}
+
+function wsextensions_toggle_settings_type_hide() {
+    $('#suggestion-type-toggle').click(wsextensions_toggle_settings_type_show);
+    $('#suggestion-type-toggle').html('[+]');
+    $('#suggestion-settings-type').hide();
+}
+
+## Register handler for switching suggestion types
+$('#suggestionEngineSuggestionTypeList').change(function() {
+    
+    var choice = "";
+    
+    $("#suggestionEngineSuggestionTypeList option:selected").each(function () {
+        choice += $(this).val();
+    });
+    
+    switch (choice) {
+
+        case "forward":
+
+            // hide other images
+            $("#suggestion-backward-image").hide();
+            $("#suggestion-bidirectional-image").hide();
+        
+            // show correct image
+            $("#suggestion-forward-image").show();
+        
+            // reveal options
+            $("#suggestion-forward").show();
+            $("#suggestion-backward").hide();
+            break;
+
+        case "backward":
+
+            // hide other images
+            $("#suggestion-forward-image").hide();
+            $("#suggestion-bidirectional-image").hide();
+        
+            // show correct image
+            $("#suggestion-backward-image").show();
+        
+            // reveal options
+            $("#suggestion-forward").hide();
+            $("#suggestion-backward").show();
+            break;
+
+        case "bidirectional":
+
+            // hide other images
+            $("#suggestion-backward-image").hide();
+            $("#suggestion-forward-image").hide();
+        
+            // show correct image
+            $("#suggestion-bidirectional-image").show();
+        
+            // reveal options
+            $("#suggestion-forward").show();
+            $("#suggestion-backward").show();
+            break;
+
+    } // switch
+
+});
+
+function wsextensions_render_documentation(response) {
 
     ## The number of lines returned.
     var n = response.length;
 
     ## If there were no suggestions returned then raise an error.
     if (n == 0) {
-        wsextensions_error("Received a response from the Suggestion Engine Web Service, but it did not contain any results");
-        ## @TODO handle this more gracefully
+       wsextensions_error("Received a response from the Suggestion Engine Web Service, but it did not contain any results");
+       ## @TODO handle this more gracefully
     } // if    
     
     ## prepare output list
@@ -146,8 +243,6 @@ $.wsextensions_suggest_values = wsextensions_suggest_values
 
 function wsextensions_render_suggest_values(response) {
 
-    //alert("here");
-
     ## The number of lines returned.
     var n = response.length;
 
@@ -175,7 +270,7 @@ function wsextensions_render_suggest_values(response) {
     msg += out;
     msg += '</p>';
     msg += '<hr class="docutils">';
-    msg += '<p class="infomark">';
+    msg += '';
     msg += '<strong>Note:</strong> Putting a note here looks cool.';
     msg += '</p>';
     show_modal( "Suggest input for " + $.wsxDocNode.name + " " + $.wsxDocParam, msg, { "Close" : hide_modal } );
@@ -272,7 +367,14 @@ function wsextensions_se_request() {
     ## register the click event for the run button            
     $("#run-se-button").click(wsextensions_se_request);
 
+    ## Autohide the options frame
+    $('#suggestion-options-body').hide();
+
+    ## Autohide the run frame
+    $('#suggestion-run-body').hide();
+
     ## Unhide the results section
+    $('#suggestion-engine-results-frame').show();
     $("#suggestion-engine-results").show();
 
     ## Display the progress bar.
@@ -280,6 +382,8 @@ function wsextensions_se_request() {
 
     ## Log it
     wsextensions_log("Preparing to make a request to the Suggestion Engine Web Service.");
+
+/**
 
     ## This a simple WebServiceTool python class that we use instead of Galaxy's
     ## built-in Tool class. We do this because there seems to be, at the time of
@@ -460,6 +564,27 @@ function wsextensions_se_request() {
 
     ## make a JSON request
     $.getJSON(request + "&callback=?", wsextensions_se_parse_response);
+
+**/
+
+
+    setTimeout(function() {
+    
+        ## Hide the progress bar.
+        $("#suggestion-engine-results-progress").hide();
+
+        ## Generate a list
+        var out = "<ul>";
+        out += "<li>";
+        out += '<a href="#" onclick="add_node_for_tool( \'some_id\', \'wublast.run\' )">wublast.run</a> ';
+        out += '(<a href="#">0.900</a>)<br />';
+        out += "</li>";
+        out += "</ul>"
+
+        ## display the results
+        $("#suggestion-engine-results-content").replaceWith('<div id="suggestion-engine-results-content">' + out + '</div>');
+
+    }, 3000);
 
     ## don't really need this return but it's recommended for some reason
     return false;
