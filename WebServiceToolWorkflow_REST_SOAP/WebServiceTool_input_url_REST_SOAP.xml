@@ -1,0 +1,52 @@
+<tool id="WebServiceTool_input_url_REST_SOAP" name="Step a: Enter the URL (WSDL/WADL location) " version="1.1.0">
+  <description>of tool (web service) description document </description>
+  <command interpreter="python">
+        WebServiceTool_input_url_m.py 
+        $url
+        $output
+  </command>
+  <inputs>
+       <param format="text" size = "60" name = "url" type="text" label="Enter the url of the tool's description document" />
+  </inputs>
+  <outputs>
+    <data format="tabular" name="output" />
+  </outputs>
+
+  <help>
+
+.. class:: infomark
+
+**TIP:** **After step a proceed to step b**
+
+All Web services come with a description document (WADL or WSDL document). Galaxy can read this information
+to create the Web service tool.
+WSDL/WADL files specify the programs/operations and their inputs and outputs.
+You can find samples of WSDL and WADL documents below
+
+Samples WSDLs:   
+
+	EBI sample services:
+         
+         http://www.ebi.ac.uk/Tools/services/soap/wublast?wsdl
+         
+         http://www.ebi.ac.uk/Tools/services/soap/clustalw2?wsdl
+         
+         More detailed information about all services at EBI can be found at http://www.ebi.ac.uk/Tools/webservices
+
+Sample WADLs: 
+
+    EupathDB sample services
+    
+         http://eupathdb.org/webservices/GeneQuestions/GenesByMolecularWeight.wadl
+         
+         http://eupathdb.org/eupathdb/webservices/GeneQuestions/GenesByTextSearch.wadl
+         
+         More detailed information about all REST services at EuPathDB can be found at http://eupathdb.org/eupathdb/serviceList.jsp
+         
+*NOTE: Step a, Step b and Step c merely add this tool to Galaxy. To use the tool, after completing Step 3, go to the Tools section on left
+and find the tool under Web Service Tools and Web Service Workflow Tools.*
+
+  </help>
+
+</tool>
+

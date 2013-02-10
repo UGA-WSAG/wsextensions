@@ -1,0 +1,47 @@
+<tool id="WebServiceTool_input_method_REST_SOAP" name="Step b: Select desired Web Service Tools / Operations" version="1.1.0">
+  <description> to be added. </description>
+  <command interpreter="python">
+	WebServiceTool_input_method_m.py
+	$input
+	$url
+    $operation
+	$output
+</command>
+  <inputs>
+    <param name = "input" type="data" label="1. The previous step was (No action required) " help="You can also select any previously performed Step a from the history to avoid repeated execution of Step a."/>
+    <param name ="url" type = "select" data_ref="input" display="radio" label ="2. The tool specified by the Web service is" help="Displays the tool (Web service) chosen in Step a. No action required.">
+        <options from_dataset="input">
+            <column name="name" index ="2"/>
+            <column name="value" index ="2"/>
+            <filter type="unique_value" name="unique" column="2"/>
+        </options>
+    </param>
+    
+    <param name ="operation" type ="select" data_ref="input" display="checkboxes" multiple="true" label ="3. Select functions of the Web service tool to add to galaxy" help="Some tools have more than one function. It is important to select the appropriate functions.">
+        <options from_dataset="input">
+            <column name="name" index ="0"/>
+            <column name="value" index ="0"/>
+            <filter type="unique_value" name="unique1" column="0"/>
+        </options>
+    </param>
+        
+  </inputs>
+  <outputs>
+    <data format="tabular" name="output" />
+  </outputs>
+
+  <help>
+  
+
+.. class:: infomark
+ 
+**TIP:** **After the completing step b proceed to step c**  
+            
+
+*NOTE: Step a, Step b and Step c merely add this tool to Galaxy. To use the tool, go to the Tools section on left
+and find the tool under Select Web Service Tools and Select Web Service Workflow Tools.*
+
+  </help>
+
+</tool>
+

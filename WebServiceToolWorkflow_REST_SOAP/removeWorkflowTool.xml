@@ -1,0 +1,26 @@
+<tool id="remove_workflow_tools" name="Remove workflow tool" version="1.0.0">
+	<description>This tool is used to remove the workflow tools present in Galaxy</description>
+	<command interpreter="python">
+		removeworkflowtool.py $toremove $output
+	</command>
+	<inputs>
+		<param name="toremove" type="select" display="radio" label="Select the standalone stub you want to remove" help="Currently you can only remove one method at a time">
+			<options from_file="../tools/WebServiceToolWorkflow_REST_SOAP/ListOfWorkflowTool.dat">
+				<column name="name" index="2"/>
+				<column name="value" index="3"/>
+			</options>
+		</param>
+	</inputs>
+	<outputs>
+		<data format="tabular" name="output" />
+	</outputs>
+	<help>
+		.. class:: infomark
+ 
+		**TIP:** **This tool is used for removing the standalone webservice stubs**  
+            
+
+		*NOTE: Once you have removed the stubs you can no longer use it to perform the necessary tasks.
+		If you want to undo the process you need to repeat the original process*
+	</help>
+</tool>

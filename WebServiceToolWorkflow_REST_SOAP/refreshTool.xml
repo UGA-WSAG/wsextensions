@@ -1,0 +1,34 @@
+<tool id="WebService_REFRESH_ID" name="Step c: Add tool(s) to Galaxy" version="1.1.0">
+<description> </description>
+<command interpreter="python">
+	refreshTool.py
+	$input
+	$output
+</command>
+  <inputs>
+   <param name="input" type="select" display="radio" size="250" label="Execute to ">
+   <option value="refresh">Add Tool</option> 
+   </param>
+   
+  </inputs>
+  <outputs>
+     <data format="tabular" name="output" />
+  </outputs>
+  <tests>
+  </tests>
+  <help>
+
+.. class:: infomark
+
+**TIP: After step c refresh the page.**
+
+**Your tool(s) can now be found under Web Service Tools and Web Service Workflow Tools in the tools section on the left.**
+      
+Web Service Tools are used to invoke web services independently.
+Web Service Workflow Tools can be used in creating workflows.
+  
+*NOTE: Step a, Step b and Step c merely add this tool to Galaxy. To use the tool, go to the Tools section on left
+and find the tool under Select Web Service Tools and Select Web Service Workflow Tools.*
+  </help>
+</tool>
+

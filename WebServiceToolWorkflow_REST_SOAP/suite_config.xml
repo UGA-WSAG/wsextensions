@@ -1,0 +1,17 @@
+<suite id="WebService_toolsuite" name="Suite of Web service addition tools" version="1.1.0">
+        <description>This suite contains all the tools required to register Web services to Galaxy
+        </description>
+        <tool id="WebServiceTool_input_url_REST_SOAP" name="Step a: Enter the URL (WSDL/WADL location) " version="1.1.0">
+            <description> This tool takes the URL of an external Web service. The URL should point to the description document of a Web service.
+            </description>
+        </tool>
+        <tool id="WebServiceTool_input_method_REST_SOAP" name="Step b: Select desired Web Service Tools / Operations" version="1.1.0">
+            <description> This tool lets the user choose operations from the Web service description document, as each operation has to be registered with Galaxy individually.
+            </description>
+        </tool>
+        <tool id="WebService_REFRESH_ID" name="Step c: Add tool(s) to Galaxy" version="1.1.0">
+            <description> Adds tool to Galaxy and refreshes toolbox. 
+            </description>
+        </tool>        
+</suite>
+

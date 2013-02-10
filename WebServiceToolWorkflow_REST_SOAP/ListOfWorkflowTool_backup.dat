@@ -1,0 +1,9 @@
+http://www.ebi.ac.uk/Tools/services/soap/wublast?wsdl	run	wublast run	WorkflowClient_1
+http://www.ebi.ac.uk/Tools/services/soap/wublast?wsdl	getStatus	wublast getStatus	WorkflowClient_2
+http://www.ebi.ac.uk/Tools/services/soap/wublast?wsdl	getResultTypes	wublast getResultTypes	WorkflowClient_3
+http://www.ebi.ac.uk/Tools/services/soap/wublast?wsdl	getResult	wublast getResult	WorkflowClient_4
+http://mango.ctegd.uga.edu/jkissingLab/SWS/webservices/converters.wsdl	decode	http://mango.ctegd.uga.edu/jkissingLab/SWS/webservices/converters.wsdl decode	WorkflowClient_5
+http://mango.ctegd.uga.edu/jkissingLab/SWS/webservices/converters.wsdl	csvtoArray	http://mango.ctegd.uga.edu/jkissingLab/SWS/webservices/converters.wsdl csvtoArray	WorkflowClient_6
+http://mango.ctegd.uga.edu/jkissingLab/SWS/webservices/converters.wsdl	encode	http://mango.ctegd.uga.edu/jkissingLab/SWS/webservices/converters.wsdl encode	WorkflowClient_7
+
+http://mango.ctegd.uga.edu/jkissingLab/SWS/webservices/converters.wsdl	arraytoCSV	http://mango.ctegd.uga.edu/jkissingLab/SWS/webservices/converters.wsdl arraytoCSV	WorkflowClient_8
