@@ -1,4 +1,4 @@
-## User Guide
+## Web Service Extensions Guide
 
 Stuff here...
 
