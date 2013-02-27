@@ -3,8 +3,8 @@ TMP_DIR = tmp
 INC_DIR = include
 SRC_DIR = src
 
-TARGETS = user-guide.md \
-          install-guide.md
+SRCS = $(wildcard $(SRC_DIR)/*.md)
+TARGETS = $(patsubst $(SRC_DIR)/%,%,$(SRCS))
 
 all: $(TARGETS)
 
