@@ -2,46 +2,54 @@
 # the directories for the project
 SRC_DIR = src
 INC_DIR = include
+IMG_DIR = images
+CSS_DIR = css
+JS_DIR = js
+
+# output and temporary directories
 OUT_DIR = doc
 TMP_DIR = tmp
 
 # grab all the .md files from the source directory
 SRCS = $(wildcard $(SRC_DIR)/*.md)
-TARGETS = $(patsubst $(SRC_DIR)/%,%,$(SRCS))
+INCS = $(wildcard $(INC_DIR)/*.md)
+IMGS = $(wildcard $(IMG_DIR)/*)
+CSSS = $(wildcard $(CSS_DIR)/*)
+JSS = $(wildcard $(JS_DIR)/*)
 
-all: clean $(TARGETS) license css
-	@echo "MAKE: COMPLETE"
-	@echo "The generated files are in '$(OUT_DIR)' directory."
+all: $(SRCS) support
+	@echo "# MAKE: COMPLETE"
+	@echo "The generated output files are in the '$(OUT_DIR)' directory."
 
-css:
-	@echo "Make: Copying the CSS files..."
-	cp $(INC_DIR)/markdown.css $(OUT_DIR)/markdown.css
+support: $(IMGS) $(CSSS) $(JSS) 
+
+$(CSS_DIR)/%: mkdirs
+	cp $@ $(OUT_DIR)/$@
+
+$(IMG_DIR)/%: mkdirs
+	cp $@ $(OUT_DIR)/$@
+
+$(JS_DIR)/%: mkdirs
+	cp $@ $(OUT_DIR)/$@
 
 mkdirs:
-	@echo "MAKE: Creating directories, if needed..."
 	mkdir -p $(TMP_DIR)
+	mkdir -p $(TMP_DIR)/$(INC_DIR)
 	mkdir -p $(OUT_DIR)
+	mkdir -p $(OUT_DIR)/$(IMG_DIR)
+	mkdir -p $(OUT_DIR)/$(CSS_DIR)
+	mkdir -p $(OUT_DIR)/$(JS_DIR)
 
-header: mkdirs
-	@echo "MAKE: Building the header..."
-	markdown $(INC_DIR)/header.md > $(TMP_DIR)/header.part
+$(INC_DIR)/%.md: mkdirs support
+	$(eval DEST := $(patsubst %.md,$(TMP_DIR)/%.part,$@))
+	markdown $@ > $(DEST)
 
-footer: mkdirs
-	@echo "MAKE: Building the footer..."
-	markdown $(INC_DIR)/footer.md > $(TMP_DIR)/footer.part
-
-license: mkdirs
-	@echo "MAKE: Building the license..."
-	markdown $(INC_DIR)/license.md > $(TMP_DIR)/license.part
-	cat $(TMP_DIR)/header.part $(TMP_DIR)/license.part $(TMP_DIR)/footer.part > $(OUT_DIR)/license.html
-
-%.md: header footer
-	@echo "MAKE: Building $@..."
-	markdown $(SRC_DIR)/$@ > $(TMP_DIR)/$(@:.md=.part)
-	cat $(TMP_DIR)/header.part $(TMP_DIR)/$(@:.md=.part) $(TMP_DIR)/footer.part > $(OUT_DIR)/$(@:.md=.html)
+$(SRC_DIR)/%.md: mkdirs $(INCS) support
+	$(eval FILE := $(patsubst $(SRC_DIR)/%,%,$@))
+	markdown $@ > $(TMP_DIR)/$(FILE:.md=.part)
+	cat $(TMP_DIR)/$(INC_DIR)/header.part $(TMP_DIR)/$(FILE:.md=.part) $(TMP_DIR)/$(INC_DIR)/footer.part > $(OUT_DIR)/$(FILE:.md=.html)
 
 clean:
-	@echo "MAKE: Cleaning the project..."
 	rm -rf $(TMP_DIR)
 	rm -rf $(OUT_DIR)
 
