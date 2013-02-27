@@ -9,13 +9,13 @@ TMP_DIR = tmp
 SRCS = $(wildcard $(SRC_DIR)/*.md)
 TARGETS = $(patsubst $(SRC_DIR)/%,%,$(SRCS))
 
-all: $(TARGETS) license css
+all: clean $(TARGETS) license css
 	@echo "MAKE: COMPLETE"
 	@echo "The generated files are in '$(OUT_DIR)' directory."
 
 css:
 	@echo "Make: Copying the CSS files..."
-	cp $(INC_DIR)/markdown.css > $(OUT_DIR)/markdown.css
+	cp $(INC_DIR)/markdown.css $(OUT_DIR)/markdown.css
 
 mkdirs:
 	@echo "MAKE: Creating directories, if needed..."
