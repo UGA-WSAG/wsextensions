@@ -17,6 +17,9 @@ h1, h2, h3, h4, h5, p {
 h1 {
     font-size: 48px;
 }
+h1 a {
+    text-decoration:none;
+}
 h2 {
     font-size: 36px;
     /* The bottom margin is small. It's designed to be used with gray meta text
