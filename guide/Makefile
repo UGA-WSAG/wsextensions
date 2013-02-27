@@ -1,11 +1,24 @@
 all: user-guide install-guide
 
-user-guide:
-	markdown user-guide.md > user-guide.html 
+mkdirs:
+	mkdie -p tmp
+	mkdir -p doc
 
-install-guide:
-	markdown install-guide.md > install-guide.html
+header: mkdirs
+	markdown include/header.md > tmp/header.part
+
+footer: mkdirs
+	markdown include/footer.md > tmp/footer.part
+
+user-guide: header footer
+	markdown user-guide.md > tmp/user-guide.part
+	cat tmp/header.part tmp/user-guide.part tmp/footer.part > out/user-guide.html
+
+install-guide: header footer
+	markdown install-guide.md > tmp/install-guide.part
+	cat tmp/header.part tmp/install-guide.part tmp/footer.part > out/install-guide.html
 
 clean:
-	rm -f user-guide.html
-	rm -f install-guide.html
+	rm -f tmp/*.part
+	rm -f out/*.md
+
