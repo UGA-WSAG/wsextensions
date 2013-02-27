@@ -9,9 +9,13 @@ TMP_DIR = tmp
 SRCS = $(wildcard $(SRC_DIR)/*.md)
 TARGETS = $(patsubst $(SRC_DIR)/%,%,$(SRCS))
 
-all: $(TARGETS)
+all: $(TARGETS) license css
 	@echo "MAKE: COMPLETE"
-	@echo "The generated files are in '$(SRC_DIR)' directory."
+	@echo "The generated files are in '$(OUT_DIR)' directory."
+
+css:
+	@echo "Make: Copying the CSS files..."
+	cp $(INC_DIR)/markdown.css > $(OUT_DIR)/markdown.css
 
 mkdirs:
 	@echo "MAKE: Creating directories, if needed..."
@@ -25,6 +29,11 @@ header: mkdirs
 footer: mkdirs
 	@echo "MAKE: Building the footer..."
 	markdown $(INC_DIR)/footer.md > $(TMP_DIR)/footer.part
+
+license: mkdirs
+	@echo "MAKE: Building the license..."
+	markdown $(INC_DIR)/license.md > $(TMP_DIR)/license.part
+	cat $(TMP_DIR)/header.part $(TMP_DIR)/license.part $(TMP_DIR)/footer.part > $(OUT_DIR)/license.html
 
 %.md: header footer
 	@echo "MAKE: Building $@..."
