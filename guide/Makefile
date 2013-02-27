@@ -1,24 +1,28 @@
-all: user-guide install-guide
+OUT_DIR = doc
+TMP_DIR = tmp
+INC_DIR = include
+SRC_DIR = src
+
+TARGETS = user-guide.md \
+          install-guide.md
+
+all: $(TARGETS)
 
 mkdirs:
-	mkdie -p tmp
-	mkdir -p doc
+	mkdir -p $(TMP_DIR)
+	mkdir -p $(OUT_DIR)
 
 header: mkdirs
-	markdown include/header.md > tmp/header.part
+	markdown $(INC_DIR)/header.md > $(TMP_DIR)/header.part
 
 footer: mkdirs
-	markdown include/footer.md > tmp/footer.part
+	markdown $(INC_DIR)/footer.md > $(TMP_DIR)/footer.part
 
-user-guide: header footer
-	markdown user-guide.md > tmp/user-guide.part
-	cat tmp/header.part tmp/user-guide.part tmp/footer.part > out/user-guide.html
-
-install-guide: header footer
-	markdown install-guide.md > tmp/install-guide.part
-	cat tmp/header.part tmp/install-guide.part tmp/footer.part > out/install-guide.html
+%.md: header footer
+	markdown $(SRC_DIR)/$@ > $(TMP_DIR)/$(@:.md=.part)
+	cat $(TMP_DIR)/header.part $(TMP_DIR)/$(@:.md=.part) $(TMP_DIR)/footer.part > $(OUT_DIR)/$(@:.md=.html)
 
 clean:
-	rm -f tmp/*.part
-	rm -f out/*.md
+	rm -rf $(TMP_DIR)
+	rm -rf $(OUT_DIR)
 
