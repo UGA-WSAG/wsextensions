@@ -1,4 +1,4 @@
-<link href="markdown.css" rel="stylesheet"></link>
+<link href="css/markdown.css" rel="stylesheet"></link>
 
 # Web Service Extensions for Galaxy
 
