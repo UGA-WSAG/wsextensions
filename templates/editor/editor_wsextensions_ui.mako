@@ -117,7 +117,7 @@
 
                             <label>Ranked Suggestion Results</label>
 
-                            <div class="toolParamHelp">Listed below are the suggested tools returned by the SSE. Click on a tool name to add it to the current workflow. Click on the numbers in parenthesese for a breakdown of how closely a tool matches the suggestion query.</div>
+                            <div class="toolParamHelp">These are SEE suggested tools. Click on a tool to add it to your workflow. Tools are ranked by a relevance score (1->0).</div>
 
                             <p>
 
