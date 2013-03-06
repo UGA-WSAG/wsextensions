@@ -87,35 +87,39 @@ $('#suggestion-goal-help').click(function() {
     show_modal( "Help: Service Suggestion Goals", out, { "Close" : hide_modal } );
 });
 
-## Handler for displaying optional settings
-$('#suggestionEngineAdvancedOptionsToggle').click(wsextensions_toggle_advanced_show);
+## Expand and Collapse Sections
+$('[id^="wsx-section"]').each(function() {
+    
+    var section_id = $(this).attr('id');
+    
+    $('[class^="wsx-toggle"]', this).click(function() {
 
-function wsextensions_toggle_advanced_show () {
-    $('#suggestionEngineAdvancedOptionsToggle').click(wsextensions_toggle_advanced_hide);
-    $('#suggestionEngineAdvancedOptionsToggle').html('[-]');
-    $('#suggestion-settings-optional').show();
-}
+        if ($(this).hasClass('wsx-toggle-shrink')) {
+	    $(this).removeClass('wsx-toggle-shrink').addClass('wsx-toggle-expand');
+	    $(this).html('[+]');
+	    $('#' + section_id + '-body').hide();
+	} else {
+	    $(this).removeClass('wsx-toggle-expand').addClass('wsx-toggle-shrink');
+	    $(this).html('[-]');
+	    $('#' + section_id + '-body').show();
+	} // if
+			
+    });
+});
 
-function wsextensions_toggle_advanced_hide () {
-    $('#suggestionEngineAdvancedOptionsToggle').click(wsextensions_toggle_advanced_show);
-    $('#suggestionEngineAdvancedOptionsToggle').html('[+]');
-    $('#suggestion-settings-optional').hide();
-}
-
-## Handlers for toggling settings sections
-$('#suggestion-type-toggle').click(wsextensions_toggle_settings_type_hide);
-
-function wsextensions_toggle_settings_type_show() {
-    $('#suggestion-type-toggle').click(wsextensions_toggle_settings_type_hide);
-    $('#suggestion-type-toggle').html('[-]');
-    $('#suggestion-settings-type').show();
-}
-
-function wsextensions_toggle_settings_type_hide() {
-    $('#suggestion-type-toggle').click(wsextensions_toggle_settings_type_show);
-    $('#suggestion-type-toggle').html('[+]');
-    $('#suggestion-settings-type').hide();
-}
+## handler for predecessor list
+$('#suggestionEnginePredecessorList').change(function() {
+    var name = $("#suggestionEnginePredecessorList option:selected").val();
+    var itm = $("<li></li>")
+    itm.attr('id', 'tool-' + name);
+    itm.html(name)
+    itm.click(function() {
+        itm.remove();
+    });
+    itm.css('background', 'url(http://i.imgur.com/n0uKUsv.png) left center no-repeat');
+    itm.css('padding-left', '20px');
+    $("#wsx-pred-list ul").append(itm);
+});
 
 ## Register handler for switching suggestion types
 $('#suggestionEngineSuggestionTypeList').change(function() {
@@ -367,11 +371,13 @@ function wsextensions_se_request() {
     ## register the click event for the run button            
     $("#run-se-button").click(wsextensions_se_request);
 
-    ## Autohide the options frame
-    $('#suggestion-options-body').hide();
+    $('[class^=wsx-toggle]', $('#wsx-section-options')).removeClass('wsx-toggle-shrink').addClass('wsx-toggle-expand');
+    $('[class^=wsx-toggle]', $('#wsx-section-options')).html('[+]');
+    $('#wsx-section-options-body').hide();
 
-    ## Autohide the run frame
-    $('#suggestion-run-body').hide();
+    $('[class^=wsx-toggle]', $('#wsx-section-results')).removeClass('wsx-toggle-expand').addClass('wsx-toggle-shrink');
+    $('[class^=wsx-toggle]', $('#wsx-section-options')).html('[-]');
+    $('#wsx-section-results-body').show();
 
     ## Unhide the results section
     $('#suggestion-engine-results-frame').show();

@@ -1,0 +1,10 @@
+2013-02-10 15:53:50,153 INFO Executing the script WebServiceTool_input_url_m.py
+2013-02-10 15:53:50,153 INFO Adding a new Web Service to Galaxy
+2013-02-10 15:53:50,153 INFO URL of Web Service Description is http://mango.ctegd.uga.edu/jkissingLab/SWS/Wsannotation/resources/ncbiblast.sawsdl
+2013-02-10 15:53:50,153 INFO The Web Service Description name is ['ncbiblast', 'sawsdl']
+2013-02-10 15:53:50,153 INFO Attempting to open the following url: http://mango.ctegd.uga.edu/jkissingLab/SWS/Wsannotation/resources/ncbiblast.sawsdl
+2013-02-10 15:53:50,246 INFO Creating a local copy of the web service description file: 
+2013-02-10 15:53:50,246 INFO Checking to see is the supplied file is WSDL or WADL
+2013-02-10 15:53:50,246 INFO The first line read: <wsdl:definitions xmlns:tns="http://soap.jdispatcher.ebi.ac.uk" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:sawsdl="http://www.w3.org/ns/sawsdl" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" name="ncbiblast" targetNamespace="http://soap.jdispatcher.ebi.ac.uk">
+
+2013-02-10 15:53:50,246 INFO Found a SOAP service with WSDL 1.0/1.1

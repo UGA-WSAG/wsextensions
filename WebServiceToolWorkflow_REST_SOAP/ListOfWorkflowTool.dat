@@ -1,0 +1,4 @@
+http://mango.ctegd.uga.edu/jkissingLab/SWS/Wsannotation/resources/ncbiblast.sawsdl	run	ncbiblast run	WorkflowClient_1
+http://mango.ctegd.uga.edu/jkissingLab/SWS/Wsannotation/resources/ncbiblast.sawsdl	getStatus	ncbiblast getStatus	WorkflowClient_2
+http://mango.ctegd.uga.edu/jkissingLab/SWS/Wsannotation/resources/ncbiblast.sawsdl	getResultTypes	ncbiblast getResultTypes	WorkflowClient_3
+http://mango.ctegd.uga.edu/jkissingLab/SWS/Wsannotation/resources/ncbiblast.sawsdl	getResult	ncbiblast getResult	WorkflowClient_4

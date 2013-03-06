@@ -1,0 +1,25 @@
+2013-02-10 15:54:26,469 INFO Executing the script 'WebServiceTool_input_method_m.py'
+2013-02-10 15:54:26,469 INFO The URL obtained is: http://mango.ctegd.uga.edu/jkissingLab/SWS/Wsannotation/resources/ncbiblast.sawsdl
+2013-02-10 15:54:26,513 INFO Saving the Web Service Description file locally: 
+2013-02-10 15:54:26,524 INFO The Web Service Description file is of type WSDL 1.1 or WSDL 1.0: 
+2013-02-10 15:54:26,524 INFO The list of operations to be added are as follows: ['run', 'getStatus', 'getResultTypes', 'getResult']
+2013-02-10 15:54:26,524 INFO Writting to the output file: /home/mepcotterell/galaxy-dist/database/files/000/dataset_5.dat
+2013-02-10 15:54:26,524 INFO Attempting to start creating client for the following Web Service: http://mango.ctegd.uga.edu/jkissingLab/SWS/Wsannotation/resources/ncbiblast.sawsdl
+2013-02-10 15:54:26,525 INFO Setting up jpype variables
+2013-02-10 15:54:26,525 INFO Starting the JVM
+2013-02-10 15:54:26,725 INFO JVM is up and running
+2013-02-10 15:54:26,725 INFO Creating objects to create stand alone and workflow tool
+2013-02-10 15:54:31,973 INFO Object for stand alone tool has been created successfully
+2013-02-10 15:54:33,102 INFO Object for workflow tool has been created successfully
+2013-02-10 15:54:33,102 INFO Creating tool stand alone and workflow tool for run
+2013-02-10 15:54:33,437 INFO Stand alone tool created successfully 5
+2013-02-10 15:54:33,572 INFO Workflow tool created successfully 5
+2013-02-10 15:54:33,572 INFO Creating tool stand alone and workflow tool for getStatus
+2013-02-10 15:54:33,689 INFO Stand alone tool created successfully 5
+2013-02-10 15:54:33,768 INFO Workflow tool created successfully 5
+2013-02-10 15:54:33,768 INFO Creating tool stand alone and workflow tool for getResultTypes
+2013-02-10 15:54:33,922 INFO Stand alone tool created successfully 5
+2013-02-10 15:54:33,999 INFO Workflow tool created successfully 5
+2013-02-10 15:54:34,000 INFO Creating tool stand alone and workflow tool for getResult
+2013-02-10 15:54:34,204 INFO Stand alone tool created successfully 5
+2013-02-10 15:54:34,371 INFO Workflow tool created successfully 5

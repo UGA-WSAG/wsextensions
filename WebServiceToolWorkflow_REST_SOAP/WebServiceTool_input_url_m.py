@@ -10,7 +10,6 @@ import sys
 import platform
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
-    import ZSI
     import commands
     import urllib2
     

@@ -6,8 +6,11 @@
 
             <div class="form-row">Version: 1.4</div>
 
-            <div class="metadataFormTitle">[-] Options</div>
-            <div id="suggestion-options-body" class="metadataFormBody">
+            <div id="wsx-section-options" class="metadataFormTitle">
+	    <span class="wsx-toggle-shrink">[-]</span>            
+            Setup &amp; Run Query
+            </div>
+            <div id="wsx-section-options-body" class="metadataFormBody">
                 <div class="form-row">
                     
                     ## Choose
@@ -17,9 +20,9 @@
                     ## bidirectional = http://i.imgur.com/MfTWkIm.png
                     ##
 
-                    <label><span id="suggestion-type-toggle">[-]</span> Choose Suggestion Type:</label>
-                    
-                    <div id="suggestion-settings-type">
+                    <label>Choose Suggestion Type:</label>
+
+                    <div id="wsx-section-options-type-body">
 
                         <div class="toolParamHelp">Customize the kind of suggestions you want by indicating where you think it should go in the workflow.</div>
                         
@@ -43,13 +46,14 @@
 
                         <hr />
 
-                        <label><span id="suggestion-forward-toggle">[-]</span> Tools to Feed From:</label>
+                        <label>Tools to Feed From:</label>
 
                         <div id="suggestion-settings-forward">
 
                             <div class="toolParamHelp">Select the tools in current workflow that you think should feed into suggested service operations.</div>
 
                             <p style="padding-top: 1em;">
+			        <div id="wsx-pred-list"><ul style="list-style-type: none; padding-left: 0; margin-left: 0;"></ul></div>
                                 <select id="suggestionEnginePredecessorList" type="text" name="predecessor" />
                                 </select>
                             </p>
@@ -62,7 +66,7 @@
 
                         <hr />
 
-                        <label><span id="suggestion-backward-toggle">[-]</span> Tools to Feed Into:</label>
+                        <label>Tools to Feed Into:</label>
 
                             <div id="suggestion-settings-backward">
 
@@ -80,7 +84,7 @@
                     <hr />
                     
                     ## Proposed concept
-                    <label><span id="suggestion-goal-toggle">[-]</span> Goal / Purpose:</label>
+                    <label>Goal / Purpose:</label>
 
                     <div id="suggestion-settings-goal">
 
@@ -92,30 +96,28 @@
 
                     </div>
 
-                    ## this area is reserved for debug output
-                    <div id="suggestion-engine-debug" style="display:none;"></div>
-
-                </div>
-            </div>
-
-            <div class="metadataFormTitle">[-] Run Suggestion Query</div>
-            <div id="suggestion-run-body" class="metadataFormBody">
-                <div class="form-row">
+                    <hr />
+                    
                     ## Run button
-                    <div class='action-button' style='border:1px solid black;display:inline;' id='run-se-button'>Query Suggestion Engine</div>
+                    <div class='action-button' style='border:1px solid black;display:inline;' id='run-se-button'>Run Query / Get Suggestions</div>
                 </div>
             </div>
 
             <div id="suggestion-engine-results-frame" style="display:none;">
-                <div class="metadataFormTitle">[-] Query Results</div>
-                <div class="metadataFormBody">
+
+                <div id="wsx-section-results" class="metadataFormTitle">
+	        <span class="wsx-toggle-shrink">[-]</span>            
+                Query Results
+                </div>
+                <div id="wsx-section-results-body" class="metadataFormBody">
                     <div class="form-row">
+
                         ## this is where the results are displayed                    
                         <div id="suggestion-engine-results" style="display:none;">
 
                             <label>Ranked Suggestion Results</label>
 
-                            <div class="toolParamHelp">Listed below are the suggested tools returned by the Service Suggestion Engine. Click on a tool name to add it to the current workflow. Click on the numbers in parenthesese to view a breakdown of how closely a tool matches the suggestion query. </div>
+                            <div class="toolParamHelp">Listed below are the suggested tools returned by the SSE. Click on a tool name to add it to the current workflow. Click on the numbers in parenthesese for a breakdown of how closely a tool matches the suggestion query.</div>
 
                             <p>
 
