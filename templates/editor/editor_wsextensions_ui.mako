@@ -7,7 +7,7 @@
             <div class="form-row">Version: 1.4</div>
 
             <div id="wsx-section-options" class="metadataFormTitle">
-	    <span class="wsx-toggle-shrink">[-]</span>            
+	    <span class="wsx-toggle-shrink" style="cursor: hand; cursor: pointer;">[-]</span>            
             Setup &amp; Run Query
             </div>
             <div id="wsx-section-options-body" class="metadataFormBody">
@@ -73,6 +73,7 @@
                             <div class="toolParamHelp">Select the tools in current workflow that you think should feed from suggested service operations.</div>
 
                             <p style="padding-top: 1em;">
+			        <div id="wsx-succ-list"><ul style="list-style-type: none; padding-left: 0; margin-left: 0;"></ul></div>	
                                 <select id ="suggestionEngineSuccessorList" type="text" name="successor" />
                                 </select>
                             </p>
@@ -96,8 +97,6 @@
 
                     </div>
 
-                    <hr />
-                    
                     ## Run button
                     <div class='action-button' style='border:1px solid black;display:inline;' id='run-se-button'>Run Query / Get Suggestions</div>
                 </div>

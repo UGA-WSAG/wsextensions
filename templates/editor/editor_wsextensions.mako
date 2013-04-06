@@ -109,17 +109,151 @@ $('[id^="wsx-section"]').each(function() {
 
 ## handler for predecessor list
 $('#suggestionEnginePredecessorList').change(function() {
-    var name = $("#suggestionEnginePredecessorList option:selected").val();
+
+    var name = $("#suggestionEnginePredecessorList option:selected").html();
     var itm = $("<li></li>")
-    itm.attr('id', 'tool-' + name);
+    
+    itm.attr('id', name);
     itm.html(name)
     itm.click(function() {
         itm.remove();
     });
-    itm.css('background', 'url(http://i.imgur.com/n0uKUsv.png) left center no-repeat');
-    itm.css('padding-left', '20px');
+
+    itm.css('background', 'url(/static/images/delete_icon.png) right center no-repeat');
+    itm.css('padding-right', '20px');
     $("#wsx-pred-list ul").append(itm);
+
 });
+
+## handler for successor list
+$('#suggestionEngineSuccessorList').change(function() {
+
+    var name = $("#suggestionEngineSuccessorList option:selected").html();
+    var itm = $("<li></li>")
+    
+    itm.attr('id', name);
+    itm.html(name)
+    itm.click(function() {
+        itm.remove();
+    });
+
+    itm.css('background', 'url(/static/images/delete_icon.png) right center no-repeat');
+    itm.css('padding-right', '20px');
+    $("#wsx-succ-list ul").append(itm);
+
+});
+
+## setup the candidate list
+$wsxCandidates = function() {
+
+    var service = function(wsdl) {
+    	return { 
+	    "descriptionDocument": wsdl,
+	    "ontologyURI": null     
+	};
+    };
+
+    var operation = function (name, ws, note) {
+    	return {
+	    "operationName": name,
+	    "service": service(ws),
+	    "note": note
+	};
+    }; 
+
+    ## This a simple WebServiceTool python class that we use instead of Galaxy's
+    ## built-in Tool class. We do this because there seems to be, at the time of
+    ## this writing, a bug in the way the tool XML files are parsed which
+    ## prevents us from properly accessing a tool's input parameters.
+    ##
+    ## @see https://bitbucket.org/galaxy/galaxy-central/issue/589/tool-class-not-parsing-input-parameters
+    ## @TODO finish documenting the python code in this snippet
+    <%
+        import xml.dom.minidom
+
+        """Simple class for parsing Web Service Tool XML files."""
+        class WebServiceTool:
+    
+            def __init__(self, config_file):
+                self.config_file = config_file
+                self.dom = xml.dom.minidom.parse(self.config_file)
+                self.inputs = {}
+                self.handleToolInputs(self.dom.getElementsByTagName("inputs")[0])
+
+            def handleToolInputs(self, inputs):
+                self.handleInputParams(inputs.getElementsByTagName("param"))
+
+            def handleInputParams(self, params):
+                for param in params:
+                    self.handleInputParam(param)
+
+            def handleInputParam(self, param):
+                name = param.getAttribute('name')
+                value = param.getAttribute('value')
+                self.inputs[name] = value
+    %>
+
+    ## STEP 1 - Gather all the information we can about the Web Service Tools
+    ##          that are both available to the current user and workflow
+    ##          compliant.
+    wsextensions_log("Gathering candidate operations.");
+
+    ## The name of the Tool sections where the Web Service Tools are located.
+    ## @TODO make this an array, just in case.
+    var candidateOpsSections = "Select Web Service Workflow Tool";
+
+    ## This array will hold the candidate operations.
+    ## They contents of this array should each be in the form of 
+    ##   <operation>@<wsdl>
+    ## or
+    ##   <operation>@<wsdl>@<toolid>
+    ## Including the Tool ID will make it possible add a candidate operation
+    ## into the workflow directly from the result list.
+    var candidateOps = [];
+
+    ## Iterate over all the Tools in the Tool Panel
+    %for section_key, section in app.toolbox.tool_panel.items():
+
+        ## Only consider the sections containing Web Service Tools
+        if ("${section.name}" == candidateOpsSections) {
+                
+            ## Iterate over the Tools in the current section that are both
+            ## workflow compatible and not hidden.
+            %for tool_key, tool in section.elems.items():
+                %if tool_key.startswith( 'tool' ):
+                    %if not tool.hidden:
+                        %if tool.is_workflow_compatible:
+
+                            ## Parse the Web Service Tool and extract the
+                            ## parameters that we need.
+                            <%
+                                wstool = WebServiceTool(tool.config_file)
+                                wsurl = "%s" % wstool.inputs.get("url", "")
+                                wsop = "%s" % wstool.inputs.get("method", "")
+                                wsst = "%s" % wstool.inputs.get("servicetype", "")
+                                wstoolid = tool.id
+                            %>
+
+                            ## Push this Tool into our array
+
+			    var op = operation("${wsop}", "${wsurl}", "${wstoolid}");
+			    console.log(JSON.stringify(op));
+                            candidateOps.push(op);
+
+                        %endif
+                    %endif
+                %endif
+            %endfor
+
+        } // if
+
+    %endfor
+
+    console.log(JSON.stringify(candidateOps));
+
+    return candidateOps;
+
+}; 
 
 ## Register handler for switching suggestion types
 $('#suggestionEngineSuggestionTypeList').change(function() {
@@ -335,8 +469,8 @@ function wsextensions_make_se_panel() {
     $('#suggestionEngineSuccessorList').empty();
 
     ## provide options to choose none
-    $('#suggestionEnginePredecessorList').append($('<option></option>').val('none').html('--all--'));
-    $('#suggestionEngineSuccessorList').append($('<option></option>').val('none').html('--all--'));
+    $('#suggestionEnginePredecessorList').append($('<option></option>').val('all').html('--all--'));
+    $('#suggestionEngineSuccessorList').append($('<option></option>').val('all').html('--all--'));
 
     ## fill the predecessor and successor selection boxes            
     for (var node_key in workflow.nodes) {
@@ -368,6 +502,44 @@ function wsextensions_make_se_panel() {
 ## @author Michael Cotterell <mepcotterell@gmail.com>
 function wsextensions_se_request() {
 
+    // valid url function from http://stackoverflow.com/questions/5717093/check-if-a-javascript-string-is-an-url
+    var validURL = function (str) {
+        var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+        '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+        '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+        '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+        if(!pattern.test(str)) {
+            return false;
+        } else {
+            return true;
+        } // if
+    };
+
+    var service = function(wsdl) {
+    	return { 
+	    "descriptionDocument": wsdl,
+	    "ontologyURI": null     
+	};
+    };
+
+    var operation = function (name, ws, note) {
+    	return {
+	    "operationName": name,
+	    "service": service(ws),
+	    "note": note
+	};
+    }; 
+
+    var request = function(wops, cops, df) {
+    	return {
+            "desiredFunctionality": df,
+            "candidates": cops,
+	    "workflow": wops
+	};
+    };
+
     ## register the click event for the run button            
     $("#run-se-button").click(wsextensions_se_request);
 
@@ -389,92 +561,8 @@ function wsextensions_se_request() {
     ## Log it
     wsextensions_log("Preparing to make a request to the Suggestion Engine Web Service.");
 
-/**
-
-    ## This a simple WebServiceTool python class that we use instead of Galaxy's
-    ## built-in Tool class. We do this because there seems to be, at the time of
-    ## this writing, a bug in the way the tool XML files are parsed which
-    ## prevents us from properly accessing a tool's input parameters.
-    ##
-    ## @see https://bitbucket.org/galaxy/galaxy-central/issue/589/tool-class-not-parsing-input-parameters
-    ## @TODO finish documenting the python code in this snippet
-    <%
-        import xml.dom.minidom
-
-        """Simple class for parsing Web Service Tool XML files."""
-        class WebServiceTool:
-    
-            def __init__(self, config_file):
-                self.config_file = config_file
-                self.dom = xml.dom.minidom.parse(self.config_file)
-                self.inputs = {}
-                self.handleToolInputs(self.dom.getElementsByTagName("inputs")[0])
-
-            def handleToolInputs(self, inputs):
-                self.handleInputParams(inputs.getElementsByTagName("param"))
-
-            def handleInputParams(self, params):
-                for param in params:
-                    self.handleInputParam(param)
-
-            def handleInputParam(self, param):
-                name = param.getAttribute('name')
-                value = param.getAttribute('value')
-                self.inputs[name] = value
-    %>
-
-    ## STEP 1 - Gather all the information we can about the Web Service Tools
-    ##          that are both available to the current user and workflow
-    ##          compliant.
-    wsextensions_log("Gathering candidate operations.");
-
-    ## The name of the Tool sections where the Web Service Tools are located.
-    ## @TODO make this an array, just in case.
-    var candidateOpsSections = "Select Web Service Workflow Tool";
-
-    ## This array will hold the candidate operations.
-    ## They contents of this array should each be in the form of 
-    ##   <operation>@<wsdl>
-    ## or
-    ##   <operation>@<wsdl>@<toolid>
-    ## Including the Tool ID will make it possible add a candidate operation
-    ## into the workflow directly from the result list.
-    var candidateOps = [];
-
-    ## Iterate over all the Tools in the Tool Panel
-    %for section_key, section in app.toolbox.tool_panel.items():
-
-        ## Only consider the sections containing Web Service Tools
-        if ("${section.name}" == candidateOpsSections) {
-                
-            ## Iterate over the Tools in the current section that are both
-            ## workflow compatible and not hidden.
-            %for tool_key, tool in section.elems.items():
-                %if tool_key.startswith( 'tool' ):
-                    %if not tool.hidden:
-                        %if tool.is_workflow_compatible:
-
-                            ## Parse the Web Service Tool and extract the
-                            ## parameters that we need.
-                            <%
-                                wstool = WebServiceTool(tool.config_file)
-                                wsurl = "%s" % wstool.inputs.get("url", "")
-                                wsop = "%s" % wstool.inputs.get("method", "")
-                                wsst = "%s" % wstool.inputs.get("servicetype", "")
-                                wstoolid = tool.id
-                            %>
-
-                            ## Push this Tool into our array
-                            candidateOps.push(["${wsop}@${wsurl}@${wstoolid}"]);
-
-                        %endif
-                    %endif
-                %endif
-            %endfor
-
-        } // if
-
-    %endfor
+    ## Grab candidate operations
+    var candidateOps = $wsxCandidates();
 
     ## Did we find any candidate operations? If not, let us register an error.
     if (candidateOps.length == 0) {
@@ -511,7 +599,7 @@ function wsextensions_se_request() {
             ## Get the operation name.
             ## Web Service Tool nodes have names in the form 
             ## of <service>.<operation>
-            var wsop = node.name.split(".")[1];
+            var wsop = node.name.split(" ")[1];
 
             ## Get the operation's WSDL URL
             ## @EPIC Uses sexy jQuery magic.
@@ -520,8 +608,12 @@ function wsextensions_se_request() {
             ## Get the Web Service Tool's tool_id
             var wstoolid = node.tool_id;
 
-            ## Push it into our array
-            workflowOps.push([wsop + "@" + wsurl + "@" + wstoolid]);
+	    if (validURL(wsurl)) {
+	        ## Push it into our array
+		var op = operation(wsop, wsurl, wstoolid);
+	    	workflowOps.push(op)
+            	console.log(op);
+	    } // if
 
         }
     }
@@ -539,22 +631,22 @@ function wsextensions_se_request() {
     ## or a URI to some concept in an ontology.
     var desiredFunctionality = $('#suggestionEngineDesired').attr('value');
 
-    ## A set of type checking constraints.
-    var typeChecking = $('#suggestionEngineTypeCheckingList').attr('value');
+    ## create the request
+    var payload = request(workflowOps, candidateOps, desiredFunctionality);
+    console.log(payload);
+    console.log('Generating the payload');
+    console.log(JSON.stringify(payload));
 
-    ## A boolean value (sent as a string) indicating whether or not to
-    ## enforce contract compliance.
-    var contractCompliance = $('#suggestionEngineContractCompliance').attr('checked');
-    if (contractCompliance != null) {
-        contractCompliance = contractCompliance.toString();
-    }
+    var jsonURI = "http://172.16.140.130:8084/SSE-WS/services"
+        + "/serviceSuggestion/get/jsonp/forward"
+        + "?payload=" + JSON.stringify(payload);
 
-    ## A boolean value (sent as a string) indicating whether or not to
-    ## enforce type safety.
-    var typeSafety = $('#suggestionEngineTypeSafety').attr('checked');
-    if (typeSafety != null) {
-        typeSafety = typeSafety.toString();
-    }
+    console.log(jsonURI);
+
+    ## make a JSON request
+    $.getJSON(jsonURI + "&callback=?", wsextensions_se_parse_response);
+
+/**
 
     ## STEP 4 - Submit the request to the Suggestion Engine Web Service
     wsextensions_log("Submitting the request to the Suggestion Engine Web Service via JSONP.");
@@ -602,6 +694,9 @@ function wsextensions_se_request() {
 ## function is only called if the jQuery JSON request was successful.
 ## @author Michael Cotterell <mepcotterell@gmail.com>
 function wsextensions_se_parse_response(suggestions) {            
+
+    console.log('Parsing the response');
+    console.log(suggestions);
             
     ## Log it
     wsextensions_log("Processing the response from the Suggestion Engine Web Service");
