@@ -19,6 +19,7 @@ WSEXTENSIONS_LOG = [];
 ## @author Michael Cotterell <mepcotterell@gmail.com>
 function wsextensions_log(message) {
     var msg = "LOG [" + (new Date()) + "] " + arguments.callee.caller.name + " : " + message;
+    window.console && console.log(msg);
     WSEXTENSIONS_LOG.push(msg);
 }
 
@@ -532,11 +533,13 @@ function wsextensions_se_request() {
 	};
     }; 
 
-    var request = function(wops, cops, df) {
+    var request = function(direction, wops, wops2, cops, df) {
     	return {
+            "direction": direction,
             "desiredFunctionality": df,
             "candidates": cops,
-	    "workflow": wops
+	    "workflow": wops,
+	    "workflow2": wops2
 	};
     };
 
@@ -584,7 +587,8 @@ function wsextensions_se_request() {
     ##   <operation>@<wsdl>@<toolid>
     ## Including the Tool ID here is not really needed. However, I chose to
     ## provide this option so that it is consistent with the candidateOps array.
-    var workflowOps = [];      
+    var workflowOps = [];
+    var workflowOps2 = [];  
 
     ## Iterate over the nodes in the current workflow.
     for (var node_key in workflow.nodes) {
@@ -609,20 +613,41 @@ function wsextensions_se_request() {
             var wstoolid = node.tool_id;
 
 	    if (validURL(wsurl)) {
-	        ## Push it into our array
-		var op = operation(wsop, wsurl, wstoolid);
-	    	workflowOps.push(op)
-            	console.log(op);
+
+                ## create operation
+                var op = operation(wsop, wsurl, wstoolid);
+
+                ## is it in the pred list?
+		$("#wsx-pred-list ul").find('li').each(function(){
+                    var current = $(this);
+                    if (current.text().indexOf(wsop) !== -1) {
+                        ## Push it into our array
+	    	        workflowOps.push(op)
+            	        console.log(op);
+                    } // if
+                });
+
+                ## is it in the succ list?
+                $("#wsx-succ-list ul").find('li').each(function(){
+                    var current = $(this);
+                    if (current.text().indexOf(wsop) !== -1) {
+                        ## Push it into our array
+	    	        workflowOps2.push(op)
+            	        console.log(op);
+                    } // if
+                });
+
 	    } // if
 
-        }
-    }
+        } // if
+
+    } // for
 
     ## Did we find any operations in the current workflow? If not, let us
     ## register an error.
-    if (workflowOps.length == 0) {
-        wsextensions_error("Could not find any operations in the current workflow.");
-    } // if
+    ##if (workflowOps.length == 0) {
+    ##    wsextensions_error("Could not find any operations in the current workflow.");
+    ##} // if
 
     ## STEP 3 - Gather all the other information from the form
     wsextensions_log("Gathering information from the form in the Suggestion Engine interface.");
@@ -631,61 +656,24 @@ function wsextensions_se_request() {
     ## or a URI to some concept in an ontology.
     var desiredFunctionality = $('#suggestionEngineDesired').attr('value');
 
-    ## create the request
-    var payload = request(workflowOps, candidateOps, desiredFunctionality);
-    console.log(payload);
-    console.log('Generating the payload');
-    console.log(JSON.stringify(payload));
+    var direction = "";
+    
+    $("#suggestionEngineSuggestionTypeList option:selected").each(function () {
+        direction = $(this).val();
+    });
 
-    var jsonURI = "http://172.16.140.130:8084/SSE-WS/services"
-        + "/serviceSuggestion/get/jsonp/forward"
+    ## create the request
+    var payload = request(direction, workflowOps, workflowOps2, candidateOps, desiredFunctionality);
+    wsextensions_log('Generated the SSE-WS request payload: ' + JSON.stringify(payload))
+
+    var jsonURI = "http://172.16.140.135:8084/SSE-WS/services"
+        + "/serviceSuggestion/get/jsonp"
         + "?payload=" + JSON.stringify(payload);
 
-    console.log(jsonURI);
-
+    wsextensions_log('Using the following URI (jQuery will add &callback=?): ' + jsonURI)
+    
     ## make a JSON request
     $.getJSON(jsonURI + "&callback=?", wsextensions_se_parse_response);
-
-/**
-
-    ## STEP 4 - Submit the request to the Suggestion Engine Web Service
-    wsextensions_log("Submitting the request to the Suggestion Engine Web Service via JSONP.");
-
-    var request = WSEXTENSIONS_SE_SERVICE_URI
-        + "/serviceSuggestion/get/json"
-        + "?workflowPrevious="     + workflowOps 
-        + "&candidates="           + candidateOps
-        + "&desired="              + desiredFunctionality 
-        + "&typeChecking="         + typeChecking
-        + "&contractCompliance="   + contractCompliance
-        + "&typeSafety="           + typeSafety
-
-    ## make a JSON request
-    $.getJSON(request + "&callback=?", wsextensions_se_parse_response);
-
-**/
-
-
-    setTimeout(function() {
-    
-        ## Hide the progress bar.
-        $("#suggestion-engine-results-progress").hide();
-
-        ## Generate a list
-        var out = "<ul>";
-        out += "<li>";
-        out += '<a href="#" onclick="add_node_for_tool( \'some_id\', \'wublast.run\' )">wublast.run</a> ';
-        out += '(<a href="#">0.900</a>)<br />';
-        out += "</li>";
-        out += "</ul>"
-
-        ## display the results
-        $("#suggestion-engine-results-content").replaceWith('<div id="suggestion-engine-results-content">' + out + '</div>');
-
-    }, 3000);
-
-    ## don't really need this return but it's recommended for some reason
-    return false;
 
 } // function wsextensions_se_request
 
@@ -695,14 +683,11 @@ function wsextensions_se_request() {
 ## @author Michael Cotterell <mepcotterell@gmail.com>
 function wsextensions_se_parse_response(suggestions) {            
 
-    console.log('Parsing the response');
-    console.log(suggestions);
-            
     ## Log it
-    wsextensions_log("Processing the response from the Suggestion Engine Web Service");
+    wsextensions_log('Processing the SSE-WS response payload: ' + JSON.stringify(suggestions));
 
-    ## The number of suggestions returned.
-    var n = suggestions.length;
+    ## The number of suggested operation returned.
+    var n = suggestions.operations.length;
 
     ## If there were no suggestions returned then raise an error.
     if (n == 0) {
@@ -710,8 +695,10 @@ function wsextensions_se_parse_response(suggestions) {
         ## @TODO handle this more gracefully
     } // if    
     
+    $.wsxSuggestions = suggestions
+
     ## prepare output list
-    var out = "<ol>";
+    var out = '<ul style="list-style-type: square;">';
 
     ## loop over suggestions
     for (var i = 0, len = n; i < len; ++i) {
@@ -726,22 +713,22 @@ function wsextensions_se_parse_response(suggestions) {
         ## 6: Galaxy tool_id
 
         ## The operation name.         
-        var op = suggestions[i][0];
+        var op = suggestions.operations[i].operationName;
 
         ## The operation's WSDL URL.
-        var wsdl = suggestions[i][1];
+        var wsdl = suggestions.operations[i].service.descriptionDocument;
 
         ## The operation's rank score.
-        var rank = suggestions[i][2];
+        var rank = suggestions.operations[i].score;
 
         ## The operation's data mediation sub-score.
-        var dm = suggestions[i][3];
+        var dm = suggestions.operations[i].dataMediationScore;
 
         ## The operation's functionality sub-score.
-        var fn = suggestions[i][4];
+        var fn = suggestions.operations[i].functionalityScore;
 
         ## The operation's preconditons/effects sub-score.
-        var pe = suggestions[i][5];
+        var pe = suggestions.operations[i].preconditionEffectScore;
 
         ## The short name of the wsdl, derived from the WSDL URL
         var short_wsdl = wsdl.substring(wsdl.lastIndexOf('/') + 1);
@@ -750,40 +737,38 @@ function wsextensions_se_parse_response(suggestions) {
         var service = short_wsdl.substring(0, short_wsdl.lastIndexOf('.'));
 
         ## The link which allows one to add the operation to the current workflow
-        var add_link = '';
-
-        wsextensions_log("Parsing suggestion for " + service + "." + op + " --> extra_info = " + suggestions[i][6]);
+        var link = '';
 
         ## Check to see if a galaxy tool_id was received. If so, this implies that
         ## the user has the tool already available to them in the workflow editor.
-        if (suggestions[i][6] != null) {
+        if (suggestions.operations[i].note != null) {
 
             ## The galaxy tool id
-            var tool_id = suggestions[i][6];
+            var tool_id = suggestions.operations[i].note;
 
             ## Generate the add link
-            add_link = '<small>Installed: <a href="#" onclick="add_node_for_tool( \'' + tool_id + '\', \'' + service + '.' + op + '\' )">add to workflow</a></small>';
+            link = '<a href="#" onclick="add_node_for_tool( \'' + tool_id + '\', \'' + service + ' ' + op + '\' )">' + service + ' ' + op + '</a>';
 
         } else {
 
             ## Otherwise, let them know that they add this tool using Radiant Web.
-            add_link = '<small>Available: RadiantWeb!</small>';
+            link = service + ' ' + op;
 
         }
 
         ## Prepare the result for rendering
         out += "<li>";
-        out += op + "<br />";
-        out += "<a href=\"" + wsdl + "\" style=\"color:#FF66FF;\"><span style=\"color:#FF66FF;\"><small>" + short_wsdl + "</small></span></a>" + "<br />";
-        out += "<span style=\"color:#999999;\"><small>" + rank + " (DM: " + dm + ", FN: " + fn + ")</small></span>" + "<br />";
-        out += add_link + "<br />";
+        out += link + "<br />";
+        ## out += "<a href=\"" + wsdl + "\" style=\"color:#FF66FF;\"><span style=\"color:#FF66FF;\"><small>" + short_wsdl + "</small></span></a>" + "<br />";
+        ## out += "<span style=\"color:#999999;\"><small>" + rank + " (DM: " + dm + ", FN: " + fn + ")</small></span>" + "<br />";
+        out += "<span style=\"color:#999999;\"><small>" + rank + "</small></span>" + "<br />";
         out += "<br />";
         out += "</li>";
         
     } // for
 
     ## finish the output list
-    out += "</ol>";
+    out += "</ul>";
 
     ## Log it
     wsextensions_log("Response parsed, rendering results to the Suggestion Engine interface.");
