@@ -73,6 +73,12 @@ function wsextensions_show_documentation(node, name) {
     ## make a JSON request
     $.getJSON(request + "&callback=?", wsextensions_render_documentation);
 
+    ## message to show
+    var msg = '<div id="wsx-suggest-doc-response"><img src="/static/images/yui/rel_interstitial_loading.gif" /></div>';
+    
+    ## show the modal
+    show_modal( "Documentation for " + $.wsxDocNode.name + " " + $.wsxDocParam, msg, { "Close" : hide_modal } );
+
 } // wsextensions_show_documentation
 $.wsextensions_show_documentation = wsextensions_show_documentation
 
@@ -483,32 +489,34 @@ function wsextensions_render_documentation(response) {
 
     ## If there were no suggestions returned then raise an error.
     if (n == 0) {
-       wsextensions_error("Received a response from the Suggestion Engine Web Service, but it did not contain any results");
-       ## @TODO handle this more gracefully
-    } // if    
+
+        ## wsextensions_error("Received a response from the Suggestion Engine Web Service, but it did not contain any results");
+        var msg = '<em>No documentation found.</em>';
+        $('#wsx-suggest-doc-response').html(msg);
+
+    } else {    
     
-    ## prepare output list
-    var out = "<ul>";
+        ## prepare output list
+        var out = "<ul>";
 
-    ## loop over suggestions
-    for (var i = 0, len = n; i < len; ++i) {
+        ## loop over suggestions
+        for (var i = 0, len = n; i < len; ++i) {
 
-        ## Prepare the result for rendering
-        out += "<li>" + response[i] + "</li>";
+            ## Prepare the result for rendering
+            out += "<li>" + response[i] + "</li>";
         
-    } // for
+        } // for
 
-    ## finish the output list
-    out += "</ul>";
+        ## finish the output list
+        out += "</ul>";
 
-    var msg = '<p>';
-    msg += out;
-    msg += '</p>';
-    msg += '<hr class="docutils">';
-    msg += '<p class="infomark">';
-    msg += '<strong>Note:</strong> Putting a note here looks cool.';
-    msg += '</p>';
-    show_modal( "Documentation for " + $.wsxDocNode.name + " " + $.wsxDocParam, msg, { "Close" : hide_modal } );
+        var msg = '<p>';
+        msg += out;
+        msg += '</p>';
+
+        $('#wsx-suggest-doc-response').html(msg);
+
+    } // if 
 
 } // wsextensions_render_documentation
 $.wsextensions_render_documentation = wsextensions_render_documentation
@@ -540,6 +548,12 @@ function wsextensions_suggest_values(node, name) {
     ## make a JSON request
     $.getJSON(request + "&callback=?", wsextensions_render_suggest_values);
 
+    ## message to show
+    var msg = '<div id="wsx-suggest-values-response"><img src="/static/images/yui/rel_interstitial_loading.gif" /></div>';
+    
+    ## show the modal
+    show_modal( "Suggest input for " + $.wsxDocNode.name + " " + $.wsxDocParam, msg, { "Close" : hide_modal } );
+
 } // wsextensions_suggest_values
 $.wsextensions_suggest_values = wsextensions_suggest_values
 
@@ -550,32 +564,34 @@ function wsextensions_render_suggest_values(response) {
 
     ## If there were no suggestions returned then raise an error.
     if (n == 0) {
-        wsextensions_error("Received a response from the Suggestion Engine Web Service, but it did not contain any results");
-        ## @TODO handle this more gracefully
-    } // if    
-    
-    ## prepare output list
-    var out = "<ul>";
 
-    ## loop over suggestions
-    for (var i = 0, len = n; i < len; ++i) {
+        ## wsextensions_error("Received a response from the Suggestion Engine Web Service, but it did not contain any results");
+        var msg = '<em>No input value suggestions found.</em>';
+        $('#wsx-suggest-values-response').html(msg);
 
-        ## Prepare the result for rendering
-        out += "<li>" + response[i] + "</li>";
+    } else {    
+
+        ## prepare output list
+        var out = "<ul>";
+
+        ## loop over suggestions
+        for (var i = 0, len = n; i < len; ++i) {
+
+            ## Prepare the result for rendering
+            out += "<li>" + response[i] + "</li>";
         
-    } // for
+        } // for
 
-    ## finish the output list
-    out += "</ul>";
+        ## finish the output list
+        out += "</ul>";
 
-    var msg = '<p>';
-    msg += out;
-    msg += '</p>';
-    msg += '<hr class="docutils">';
-    msg += '';
-    msg += '<strong>Note:</strong> Putting a note here looks cool.';
-    msg += '</p>';
-    show_modal( "Suggest input for " + $.wsxDocNode.name + " " + $.wsxDocParam, msg, { "Close" : hide_modal } );
+        var msg = '<p>';
+        msg += out;
+        msg += '</p>';
+      
+        $('#wsx-suggest-values-response').html(msg);
+
+    } // if
 
 } // wsextensions_render_suggest_values
 $.wsextensions_render_suggest_values = wsextensions_render_suggest_values
