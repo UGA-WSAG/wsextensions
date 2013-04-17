@@ -8,3 +8,55 @@
 2013-02-10 15:53:50,246 INFO The first line read: <wsdl:definitions xmlns:tns="http://soap.jdispatcher.ebi.ac.uk" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:sawsdl="http://www.w3.org/ns/sawsdl" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" name="ncbiblast" targetNamespace="http://soap.jdispatcher.ebi.ac.uk">
 
 2013-02-10 15:53:50,246 INFO Found a SOAP service with WSDL 1.0/1.1
+2013-04-10 12:35:51,616 INFO Executing the script WebServiceTool_input_url_m.py
+2013-04-10 12:35:51,620 INFO Adding a new Web Service to Galaxy
+2013-04-10 12:35:51,620 INFO URL of Web Service Description is http://mango.ctegd.uga.edu/jkissingLab/SWS/Wsannotation/resources/wublast.sawsdl
+2013-04-10 12:35:51,620 INFO The Web Service Description name is ['wublast', 'sawsdl']
+2013-04-10 12:35:51,620 INFO Attempting to open the following url: http://mango.ctegd.uga.edu/jkissingLab/SWS/Wsannotation/resources/wublast.sawsdl
+2013-04-10 12:35:51,733 INFO Creating a local copy of the web service description file: 
+2013-04-10 12:35:51,734 INFO Checking to see is the supplied file is WSDL or WADL
+2013-04-10 12:35:51,734 INFO The first line read: <?xml version="1.0" encoding="UTF-8"?>
+
+2013-04-10 12:35:51,734 INFO Checking to see is the supplied file is WSDL or WADL
+2013-04-10 12:35:51,734 INFO The first line read: <wsdl:definitions
+
+2013-04-10 12:35:51,734 INFO Found a SOAP service with WSDL 1.0/1.1
+2013-04-10 12:39:13,185 INFO Executing the script WebServiceTool_input_url_m.py
+2013-04-10 12:39:13,185 INFO Adding a new Web Service to Galaxy
+2013-04-10 12:39:13,185 INFO URL of Web Service Description is http://mango.ctegd.uga.edu/jkissingLab/SWS/Wsannotation/resources/WSConverter.sawsdl
+2013-04-10 12:39:13,185 INFO The Web Service Description name is ['WSConverter', 'sawsdl']
+2013-04-10 12:39:13,185 INFO Attempting to open the following url: http://mango.ctegd.uga.edu/jkissingLab/SWS/Wsannotation/resources/WSConverter.sawsdl
+2013-04-10 12:39:13,238 INFO Creating a local copy of the web service description file: 
+2013-04-10 12:39:13,238 INFO Checking to see is the supplied file is WSDL or WADL
+2013-04-10 12:39:13,238 INFO The first line read: <?xml version="1.0" encoding="UTF-8"?>
+
+2013-04-10 12:39:13,238 INFO Checking to see is the supplied file is WSDL or WADL
+2013-04-10 12:39:13,238 INFO The first line read: <wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://converters" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:sawsdl="http://www.w3.org/ns/sawsdl" targetNamespace="http://converters">
+
+2013-04-10 12:39:13,238 INFO Found a SOAP service with WSDL 1.0/1.1
+2013-04-16 18:26:32,925 INFO Executing the script WebServiceTool_input_url_m.py
+2013-04-16 18:26:32,927 INFO Adding a new Web Service to Galaxy
+2013-04-16 18:26:32,927 INFO URL of Web Service Description is http://mango.ctegd.uga.edu/jkissingLab/SWS/Wsannotation/resources/clustalw2.sawsdl
+2013-04-16 18:26:32,927 INFO The Web Service Description name is ['clustalw2', 'sawsdl']
+2013-04-16 18:26:32,927 INFO Attempting to open the following url: http://mango.ctegd.uga.edu/jkissingLab/SWS/Wsannotation/resources/clustalw2.sawsdl
+2013-04-16 18:26:33,007 INFO Creating a local copy of the web service description file: 
+2013-04-16 18:26:33,007 INFO Checking to see is the supplied file is WSDL or WADL
+2013-04-16 18:26:33,007 INFO The first line read: <?xml version="1.0" encoding="UTF-8"?>
+
+2013-04-16 18:26:33,007 INFO Checking to see is the supplied file is WSDL or WADL
+2013-04-16 18:26:33,007 INFO The first line read: <wsdl:definitions name="clustalw2" targetNamespace="http://soap.jdispatcher.ebi.ac.uk" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://soap.jdispatcher.ebi.ac.uk" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sawsdl="http://www.w3.org/ns/sawsdl">
+
+2013-04-16 18:26:33,007 INFO Found a SOAP service with WSDL 1.0/1.1
+2013-04-16 18:28:51,025 INFO Executing the script WebServiceTool_input_url_m.py
+2013-04-16 18:28:51,027 INFO Adding a new Web Service to Galaxy
+2013-04-16 18:28:51,027 INFO URL of Web Service Description is http://mango.ctegd.uga.edu/jkissingLab/SWS/Wsannotation/resources/wsPhylipProtDist.sawsdl
+2013-04-16 18:28:51,027 INFO The Web Service Description name is ['wsPhylipProtDist', 'sawsdl']
+2013-04-16 18:28:51,027 INFO Attempting to open the following url: http://mango.ctegd.uga.edu/jkissingLab/SWS/Wsannotation/resources/wsPhylipProtDist.sawsdl
+2013-04-16 18:28:51,134 INFO Creating a local copy of the web service description file: 
+2013-04-16 18:28:51,134 INFO Checking to see is the supplied file is WSDL or WADL
+2013-04-16 18:28:51,134 INFO The first line read: <?xml version="1.0" encoding="UTF-8"?>
+
+2013-04-16 18:28:51,135 INFO Checking to see is the supplied file is WSDL or WADL
+2013-04-16 18:28:51,135 INFO The first line read: <wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:wsp="http://www.w3.org/ns/ws-policy" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:tns="http://wsannotations.ctegd.uga.edu/services/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsp1_2="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:sawsdl="http://www.w3.org/ns/sawsdl" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://wsannotations.ctegd.uga.edu/services/">
+
+2013-04-16 18:28:51,135 INFO Found a SOAP service with WSDL 1.0/1.1

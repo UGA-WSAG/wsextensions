@@ -23,3 +23,82 @@
 2013-02-10 15:54:34,000 INFO Creating tool stand alone and workflow tool for getResult
 2013-02-10 15:54:34,204 INFO Stand alone tool created successfully 5
 2013-02-10 15:54:34,371 INFO Workflow tool created successfully 5
+2013-04-10 12:36:33,675 INFO Executing the script 'WebServiceTool_input_method_m.py'
+2013-04-10 12:36:33,678 INFO The URL obtained is: http://mango.ctegd.uga.edu/jkissingLab/SWS/Wsannotation/resources/wublast.sawsdl
+2013-04-10 12:36:33,718 INFO Saving the Web Service Description file locally: 
+2013-04-10 12:36:33,722 INFO The Web Service Description file is of type WSDL 1.1 or WSDL 1.0: 
+2013-04-10 12:36:33,722 INFO The list of operations to be added are as follows: ['run', 'getStatus', 'getResult']
+2013-04-10 12:36:33,722 INFO Writting to the output file: /home/mepcotterell/galaxy-dist/database/files/000/dataset_9.dat
+2013-04-10 12:36:33,722 INFO Attempting to start creating client for the following Web Service: http://mango.ctegd.uga.edu/jkissingLab/SWS/Wsannotation/resources/wublast.sawsdl
+2013-04-10 12:36:33,722 INFO Setting up jpype variables
+2013-04-10 12:36:33,722 INFO Starting the JVM
+2013-04-10 12:36:33,855 INFO JVM is up and running
+2013-04-10 12:36:33,855 INFO Creating objects to create stand alone and workflow tool
+2013-04-10 12:36:38,701 INFO Object for stand alone tool has been created successfully
+2013-04-10 12:36:39,553 INFO Object for workflow tool has been created successfully
+2013-04-10 12:36:39,553 INFO Creating tool stand alone and workflow tool for run
+2013-04-10 12:36:39,815 INFO Stand alone tool created successfully 5
+2013-04-10 12:36:39,929 INFO Workflow tool created successfully 5
+2013-04-10 12:36:39,930 INFO Creating tool stand alone and workflow tool for getStatus
+2013-04-10 12:36:40,036 INFO Stand alone tool created successfully 5
+2013-04-10 12:36:40,143 INFO Workflow tool created successfully 5
+2013-04-10 12:36:40,143 INFO Creating tool stand alone and workflow tool for getResult
+2013-04-10 12:36:40,262 INFO Stand alone tool created successfully 5
+2013-04-10 12:36:40,329 INFO Workflow tool created successfully 5
+2013-04-10 12:39:55,325 INFO Executing the script 'WebServiceTool_input_method_m.py'
+2013-04-10 12:39:55,326 INFO The URL obtained is: http://mango.ctegd.uga.edu/jkissingLab/SWS/Wsannotation/resources/WSConverter.sawsdl
+2013-04-10 12:39:55,363 INFO Saving the Web Service Description file locally: 
+2013-04-10 12:39:55,364 INFO The Web Service Description file is of type WSDL 1.1 or WSDL 1.0: 
+2013-04-10 12:39:55,364 INFO The list of operations to be added are as follows: ['decode', 'encode']
+2013-04-10 12:39:55,364 INFO Writting to the output file: /home/mepcotterell/galaxy-dist/database/files/000/dataset_11.dat
+2013-04-10 12:39:55,364 INFO Attempting to start creating client for the following Web Service: http://mango.ctegd.uga.edu/jkissingLab/SWS/Wsannotation/resources/WSConverter.sawsdl
+2013-04-10 12:39:55,364 INFO Setting up jpype variables
+2013-04-10 12:39:55,364 INFO Starting the JVM
+2013-04-10 12:39:55,536 INFO JVM is up and running
+2013-04-10 12:39:55,536 INFO Creating objects to create stand alone and workflow tool
+2013-04-10 12:40:00,047 INFO Object for stand alone tool has been created successfully
+2013-04-10 12:40:00,539 INFO Object for workflow tool has been created successfully
+2013-04-10 12:40:00,553 INFO Creating tool stand alone and workflow tool for decode
+2013-04-10 12:40:00,783 INFO Stand alone tool created successfully 5
+2013-04-10 12:40:00,874 INFO Workflow tool created successfully 5
+2013-04-10 12:40:00,874 INFO Creating tool stand alone and workflow tool for encode
+2013-04-10 12:40:00,967 INFO Stand alone tool created successfully 5
+2013-04-10 12:40:01,039 INFO Workflow tool created successfully 5
+2013-04-16 18:27:08,342 INFO Executing the script 'WebServiceTool_input_method_m.py'
+2013-04-16 18:27:08,343 INFO The URL obtained is: http://mango.ctegd.uga.edu/jkissingLab/SWS/Wsannotation/resources/clustalw2.sawsdl
+2013-04-16 18:27:08,409 INFO Saving the Web Service Description file locally: 
+2013-04-16 18:27:08,418 INFO The Web Service Description file is of type WSDL 1.1 or WSDL 1.0: 
+2013-04-16 18:27:08,418 INFO The list of operations to be added are as follows: ['run', 'getResult']
+2013-04-16 18:27:08,418 INFO Writting to the output file: /home/mepcotterell/galaxy-dist/database/files/000/dataset_13.dat
+2013-04-16 18:27:08,418 INFO Attempting to start creating client for the following Web Service: http://mango.ctegd.uga.edu/jkissingLab/SWS/Wsannotation/resources/clustalw2.sawsdl
+2013-04-16 18:27:08,418 INFO Setting up jpype variables
+2013-04-16 18:27:08,418 INFO Starting the JVM
+2013-04-16 18:27:08,672 INFO JVM is up and running
+2013-04-16 18:27:08,672 INFO Creating objects to create stand alone and workflow tool
+2013-04-16 18:27:14,185 INFO Object for stand alone tool has been created successfully
+2013-04-16 18:27:15,179 INFO Object for workflow tool has been created successfully
+2013-04-16 18:27:15,180 INFO Creating tool stand alone and workflow tool for run
+2013-04-16 18:27:15,492 INFO Stand alone tool created successfully 5
+2013-04-16 18:27:15,634 INFO Workflow tool created successfully 5
+2013-04-16 18:27:15,635 INFO Creating tool stand alone and workflow tool for getResult
+2013-04-16 18:27:15,759 INFO Stand alone tool created successfully 5
+2013-04-16 18:27:15,874 INFO Workflow tool created successfully 5
+2013-04-16 18:29:26,855 INFO Executing the script 'WebServiceTool_input_method_m.py'
+2013-04-16 18:29:26,855 INFO The URL obtained is: http://mango.ctegd.uga.edu/jkissingLab/SWS/Wsannotation/resources/wsPhylipProtDist.sawsdl
+2013-04-16 18:29:26,901 INFO Saving the Web Service Description file locally: 
+2013-04-16 18:29:26,906 INFO The Web Service Description file is of type WSDL 1.1 or WSDL 1.0: 
+2013-04-16 18:29:26,906 INFO The list of operations to be added are as follows: ['retrieveProtDistResult', 'protdist']
+2013-04-16 18:29:26,906 INFO Writting to the output file: /home/mepcotterell/galaxy-dist/database/files/000/dataset_15.dat
+2013-04-16 18:29:26,907 INFO Attempting to start creating client for the following Web Service: http://mango.ctegd.uga.edu/jkissingLab/SWS/Wsannotation/resources/wsPhylipProtDist.sawsdl
+2013-04-16 18:29:26,907 INFO Setting up jpype variables
+2013-04-16 18:29:26,907 INFO Starting the JVM
+2013-04-16 18:29:27,057 INFO JVM is up and running
+2013-04-16 18:29:27,057 INFO Creating objects to create stand alone and workflow tool
+2013-04-16 18:29:31,459 INFO Object for stand alone tool has been created successfully
+2013-04-16 18:29:32,034 INFO Object for workflow tool has been created successfully
+2013-04-16 18:29:32,034 INFO Creating tool stand alone and workflow tool for retrieveProtDistResult
+2013-04-16 18:29:32,404 INFO Stand alone tool created successfully 5
+2013-04-16 18:29:32,537 INFO Workflow tool created successfully 5
+2013-04-16 18:29:32,537 INFO Creating tool stand alone and workflow tool for protdist
+2013-04-16 18:29:32,718 INFO Stand alone tool created successfully 5
+2013-04-16 18:29:32,858 INFO Workflow tool created successfully 5

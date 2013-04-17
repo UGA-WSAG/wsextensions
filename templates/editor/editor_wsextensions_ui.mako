@@ -4,7 +4,7 @@
 
             <div class="toolFormTitle">Service Suggestion Engine</div>
 
-            <div class="form-row">Version: 1.4</div>
+            <div class="form-row">Version: 1.5</div>
 
             <div id="wsx-section-options" class="metadataFormTitle">
 	    <span class="wsx-toggle-shrink" style="cursor: hand; cursor: pointer;">[-]</span>            
@@ -24,7 +24,7 @@
 
                     <div id="wsx-section-options-type-body">
 
-                        <div class="toolParamHelp">Customize the kind of suggestions you want by indicating where you think it should go in the workflow.</div>
+                        <div class="toolParamHelp">Choose the kind of suggestions you want by indicating where you think they should go in the workflow.</div>
                         
                         <p style="padding-top: 1em;">
                         <select id ="suggestionEngineSuggestionTypeList" type="text" name="successor" />
@@ -38,7 +38,7 @@
                         <div id="suggestion-backward-image" style="display:none;"><img  style="max-height: 45px" alt="type" src="http://i.imgur.com/XoD0WCw.png"></div>
                         <div id="suggestion-bidirectional-image" style="display:none;"><img  style="max-height: 45px" alt="type" src="http://i.imgur.com/MfTWkIm.png"></div>
                         
-                        <p class="infomark">Click <a id="suggestion-type-help" href="#">here</a> for more information about the different types of service suggestions.</p>
+                        <p class="infomark">Click <a id="suggestion-type-help" href="#">here</a> for more information about the different types of service suggestion.</p>
 
                     </div>
 
@@ -54,7 +54,7 @@
 
                             <p style="padding-top: 1em;">
 			        <div id="wsx-pred-list"><ul style="list-style-type: none; padding-left: 0; margin-left: 0;"></ul></div>
-                                <select id="suggestionEnginePredecessorList" type="text" name="predecessor" />
+                                <select id="suggestionEnginePredecessorList" type="text" name="predecessor" style="width: 100%;" />
                                 </select>
                             </p>
 
@@ -74,7 +74,7 @@
 
                             <p style="padding-top: 1em;">
 			        <div id="wsx-succ-list"><ul style="list-style-type: none; padding-left: 0; margin-left: 0;"></ul></div>	
-                                <select id ="suggestionEngineSuccessorList" type="text" name="successor" />
+                                <select id ="suggestionEngineSuccessorList" type="text" name="successor" style="width: 100%;" />
                                 </select>
                             </p>
 
@@ -92,20 +92,23 @@
                         <div class="toolParamHelp">In simple terms, describe what you are trying to do/find (e.g., multiple sequence alignment).</div>
 
                         <p style="padding-top: 1em;">
-                        <input id="suggestionEngineDesired" type="text" name="concept" value=""/> <a id="suggestion-goal-help" href="#"><img style="padding-left: 0.5em;" alt="help" src="/static/style/info_small.png" /></a>
+                        <input id="suggestionEngineDesired" type="text" name="concept" value="" style="width: 100%;"/>
                         </p>
+	                <p class="infomark">Click <a id="suggestion-goal-help" href="#">here</a> for more information about specifying goals.</p>
 
                     </div>
 
+                    <hr />
+
                     ## Run button
-                    <div class='action-button' style='border:1px solid black;display:inline;' id='run-se-button'>Run Query / Get Suggestions</div>
+                    <div class='action-button' style='border:1px solid black; display:inline;' id='run-se-button'>Run Query / Get Suggestions</div>
                 </div>
             </div>
 
             <div id="suggestion-engine-results-frame" style="display:none;">
 
                 <div id="wsx-section-results" class="metadataFormTitle">
-	        <span class="wsx-toggle-shrink">[-]</span>            
+	        <span class="wsx-toggle-shrink" style="cursor: hand; cursor: pointer;">[-]</span>            
                 Query Results
                 </div>
                 <div id="wsx-section-results-body" class="metadataFormBody">
@@ -118,15 +121,21 @@
 
                             <div class="toolParamHelp">These are SEE suggested tools. Click on a tool to add it to your workflow. Tools are ranked by a relevance score (1->0).</div>
 
+			    <br />
+
+			    <div id="wsx-result-count-info" style="display:none;" class="toolParamHelp">Showing <span id="wsx-result-count-show">?</span> of <span id="wsx-result-count">?</span> results.<span id="wsx-result-more" style="display:none;"> | <a id="wsx-result-more-button" href="#">Show All</a></span></div>
+
                             <p>
 
-                            <div id="suggestion-engine-results-progress" style="display:none;">
-                                <img src="/static/images/yui/rel_interstitial_loading.gif" />
-                            </div>
+                                <div id="suggestion-engine-results-progress" style="display:none;">
+                                    <img src="/static/images/yui/rel_interstitial_loading.gif" />
+                                </div>
 
-                            <div id="suggestion-engine-results-content"></div>
+                                <div id="suggestion-engine-results-content"></div>
 
                             </p>
+
+	                <p class="infomark">Click <a id="suggestion-result-help" href="#">here</a> for more information about how results are ranked.</p>
 
                         </div>
                     </div>
