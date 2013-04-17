@@ -671,6 +671,9 @@ $("#workflow-options-button").replaceWith('<a id="workflow-suggestions-button" c
 make_popupmenu( $("#workflow-suggestions-button"), {
     "Suggestion Engine": wsextensions_make_se_panel,
     "About": wsextensions_show_about,
+    "Report Bug": function() {
+        window.open('https://github.com/WSAnnotations/GalaxyExtensions/issues');
+    },
     "View Debug Log" : wsextensions_show_log
 });
 
