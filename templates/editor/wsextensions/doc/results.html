@@ -1,0 +1,58 @@
+
+<p>
+The Service Suggestion Engine (SSE) provides tool suggestions to the user as a ranked list, scored in descending order from 1.0 (best) to 0 (worst). 
+The implementations of the algorithms used by the SSE expands upon our previous work [1]. 
+
+<h4>Inputs and Scores</h4>
+
+With respect to Galaxy, the SEE considers four things in order to provide suggestions: 
+</p>
+
+<ol>
+
+<li style="padding-bottom: 1em;">
+<strong>Direction:</strong> Helps the user specify where he or she would like to place the suggested tools in the workflow; 
+</li>
+
+<li style="padding-bottom: 1em;">
+<strong>Workflow Tool Lists: </strong> Depending on <em>direction</em>, the user adds tools currently on the Workflow Canvas to one or more lists, depending on the relationship each tool should have with tools to be suggested; 
+</li>
+
+<li style="padding-bottom: 1em;">
+<strong>Candidate Tool List:</strong> The list of tools, added to Galaxy, that are available for use on the Workflow Canvas; and 
+</li>
+
+<li>
+<strong>Goal / Functionality:</strong> A description of what the suggested operations should help accomplish, provided as either keywords (e.g., "multiple sequence alignment") or as IRI to a term in an ontology. 
+</li>
+
+</ol>
+
+<p>
+The scores given to each tool in the results (a subset of available tools) is the weighted sum of two subscores:  
+</p>
+
+<ul>
+
+<li style="padding-bottom: 1em;">
+<strong>Data Mediation (<code>dm</code>):</strong> This sub-score is intended to measure how well the inputs and outputs of a tool can be matched to tools in the various lists chosen by the user, either directly or through some form of data mediation. 
+It is based on various structural, semantic and syntactic similarity metrics. 
+</li>
+
+<li>
+<strong>Functionality (<code>fn</code>):</strong> This sub-score is determined by how well a tool matches the goal specified by the user. 
+If no goal is specified, then the overall score for a suggested tool is based only on the <code>dm</code> sub-score. 
+</li>
+
+</ul>
+
+<p>
+More detailed information about how the exact scores are calculated can be found in [2]. 
+For examples, please see the link to more documentation at the bottom of this popup. 
+</p>
+
+<h4>References</h4>
+
+<p><small>[1] <a href="http://dx.doi.org/10.1109/SERVICES.2010.65" target="_blank"><img src="http://i.imgur.com/IV43Kvj.png" border="0"></a> R. Wang, S. Ganjoo, J.A. Miller, and E.T. Kraemer. "Ranking-Based Suggestion Algorithms for Semantic Web Service Composition," In <em>Proceedings of the 2010 World Congress on Services (SERVICES-1)</em>, 2010, pp 606-613, IEEE.</small></p>
+<p><small>[2] <a href="http://dx.doi.org/10.3233/978-1-61499-084-0-29" target="_blank"><img src="http://i.imgur.com/IV43Kvj.png" border="0"></a> A. Dhamanaskar, M. E. Cotterell, J. Z. Zheng, J. A. Miller, J. C. Kissinger, and C. J. Stoeckert, "Suggestions in Galaxy Workflow Design Based on Ontologically Annotated Services," in <em>Proceedings of the 7th International Conference on Formal Ontology in Information Systems (FOIS\'12)</em>, 2012, pp. 29-42. IOS.</small></p>
+

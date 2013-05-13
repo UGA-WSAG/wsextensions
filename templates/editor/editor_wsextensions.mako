@@ -1,269 +1,175 @@
-
 ## Web Service Extensions for the Galaxy Workflow Editor
-## @author Michael Cotterell <mepcotterell@gmail.com>
+## @author Michael E. Cotterell <mepcotterell@gmail.com>
 ##
 ## NOTE: This file is included in editor.mako via a mako include.
 
-## The product version
-WSEXTENSIONS_VERSIONS = "1.5";
+$.wsextensions = {};
+$.wsextensions.logbuffer = [];
 
-## The JSONP URI endpoint for the Suggestion Engine Web Service
-## @author Michael Cotterell <mepcotterell@gmail.com>
-WSEXTENSIONS_SE_SERVICE_URI = "http://172.16.140.137:8084/SSE-WS/services";
+$.wsextensions.props = {
+    'version':  '1.5',
+    'endpoint': 'http://wsannotations.ctegd.uga.edu/SSE-WS/services',
+}; // $.wsextensions.props
 
-## A global array of messages that we can access from the JavaScript console.
-## @author Michael Cotterell <mepcotterell@gmail.com>
-WSEXTENSIONS_LOG = [];
+$.wsextensions.models = {
 
-## This function logs a message to the global log array.
-## @author Michael Cotterell <mepcotterell@gmail.com>
-function wsextensions_log(message) {
-    var msg = "LOG [" + (new Date()) + "] " + arguments.callee.caller.name + " : " + message;
+    'service': function(wsdl) {
+    	return { 
+	    "descriptionDocument": wsdl,
+	    "ontologyURI": null     
+	};
+    },
+
+    'operation': function (name, ws, note) {
+    	return {
+	    "operationName": name,
+	    "service": $.wsextensions.models.service(ws),
+	    "note": note
+	};
+    },
+
+    'request': function(direction, wops, wops2, cops, df) {
+    	return {
+            "direction": direction,
+            "desiredFunctionality": df,
+            "candidates": cops,
+	    "workflow": wops,
+	    "workflow2": wops2
+	};
+    },
+
+}; // $.wsextensions.models
+
+$.wsextensions.doc = {
+    'about':            function() {/* <%include file="wsextensions/doc/about.html"/> */},
+    'issues':           function() {/* <%include file="wsextensions/doc/issues.html"/> */},
+    'goal':             function() {/* <%include file="wsextensions/doc/goal.html"/> */},
+    'results':          function() {/* <%include file="wsextensions/doc/results.html"/> */},
+    'suggestion_types': function() {/* <%include file="wsextensions/doc/suggestion_types.html"/> */},
+    'footer':           function() {/* <%include file="wsextensions/doc/footer.html"/> */},
+}; // $.wsextensions.doc
+
+## This function logs a message to the logbuffer
+$.wsextensions.log = function(message) {
+    var msg = "[" + (new Date()) + "] " + arguments.callee.caller.name + " : " + message;
     window.console && console.log(msg);
-    WSEXTENSIONS_LOG.push(msg);
-}
+    $.wsextensions.logbuffer.push(msg);
+} // $.wsextensions.log
 
-## This function logs an error to the global log array.
-## @author Michael Cotterell <mepcotterell@gmail.com>
-function wsextensions_error(message) {
+## This function logs an error to the logbuffer
+$.wsextensions.error = function(message) {
     var caller = "SERVER SIDE";
     if (arguments.callee.caller != null) {
-        var caller = arguments.callee.caller.name;
-    }
+        caller = arguments.callee.caller.name;
+    } // if
     var msg = "ERROR [" + (new Date()) + "] " + caller + " : " + message;
-    show_modal( "Web Service Extensions Error", msg, { "Ignore error" : hide_modal } );
-    WSEXTENSIONS_LOG.push(msg);
-}
+    window.console && console.log(msg);
+    $.wsextensions.logbuffer.push(msg);
+    show_modal( "Web Service Extensions Error", msg, { "Ignore Error" : hide_modal } );
+} // $.wsextensions.error
 
 ## Show the log
-function wsextensions_show_log() {
-    var n = WSEXTENSIONS_LOG.length;
-    var out = '<textarea rows="10" cols="160">';
+$.wsextensions.showLogDialog = function() {
+    var n = $.wsextensions.logbuffer.length;
+    var out = '<textarea rows="10" cols="80">';
     for (var i = 0, len = n; i < len; ++i) {
-        out += WSEXTENSIONS_LOG[i] + '\n\n';
-    }
+        out += $.wsextensions.logbuffer[i] + '\n';
+    } // for
     out += '</textarea>';
     show_modal( "Web Service Extensions Log", out, { "Close" : hide_modal } );
-}
+} // wsextensions_show_log
 
-## Show the input documentation dialog
-function wsextensions_show_documentation(node, name) {
-    
-    ## This is the current node.        
-    ## var node = workflow.nodes[node_key];
-    var wsurl  = $('input[name="url"]', $(node.form_html)).attr('value');
-    var wsname = node.name.split(".")[0];
-    var wsop   = node.name.split(".")[1];
-    var param  = name;
-    
-    $.wsxDocNode  = node;
-    $.wsxDocWsdl  = wsurl;
-    $.wsxDocName  = wsname;
-    $.wsxDocOp    = wsop;
-    $.wsxDocParam = param;
+$.wsextensions.renderDoc = function(doc_func) {
+    var out = doc_func.toString();  // get the function as a string
+    var beg = out.indexOf('*');     // determine beginning of comment
+    var end = out.lastIndexOf('*'); // determine end of comment  
+    if (beg == -1 || end == -1) {
+        $.wsextensions_error('Could not render documentation string: ' + out);
+    } // if
+    return out.substring(beg + 1, end - 1);
+} // $.wsextensions_doc_render
 
-    wsextensions_log("Rendering the input documentation box");
-    wsextensions_log(wsurl);    
+## Handles AJAX Timeouts
+$.wsextensions.getJSON = function(request, func, timeout) {
 
-    var request = WSEXTENSIONS_SE_SERVICE_URI
-    	+ "/documentationSuggestion/get/json"
-        + "?wsdl="            + encodeURI(wsurl)
-        + "&param="           + param 
+    var start = Date.now();
 
-    ## make a JSON request
-    $.getJSON(request + "&callback=?", wsextensions_render_documentation);
+    var id = 'JSONP (' + start + ') ';
 
-    ## message to show
-    var msg = '<div id="wsx-suggest-doc-response"><img src="/static/images/yui/rel_interstitial_loading.gif" /></div>';
-    
-    ## show the modal
-    show_modal( "Documentation for " + $.wsxDocNode.name + " " + $.wsxDocParam, msg, { "Close" : hide_modal } );
+    var timerCheck = function() {
+        $.wsextensions.error(id + 'request timed out');
+	clearInterval(timer);
+    } // timerCheck
 
-} // wsextensions_show_documentation
-$.wsextensions_show_documentation = wsextensions_show_documentation
+    var timer = setInterval(timerCheck, timeout); 
+
+    var responseCheck = function(response) {
+	var now = Date.now();
+        $.wsextensions.log(id + 'response returned in ' + (now - start) + ' ms');
+	$.wsextensions.log(id + 'response: ' + JSON.stringify(response));
+	if (now < start + timeout) {    
+            clearInterval(timer);
+	    func(response);
+        } else {
+	    $.wsextensions.log(id + 'response returned after timeout period');
+        } // if
+    } // check
+
+    $.wsextensions.log(id + 'request: ' + request);
+    $.getJSON(request, responseCheck);
+
+} // $.wsextensions.getJSON
+
+## Show the about dialog
+$.wsextensions.showAboutDialog = function() {
+    var out = '';
+    out += $.wsextensions.renderDoc($.wsextensions.doc.about);
+    out += $.wsextensions.renderDoc($.wsextensions.doc.footer);
+    show_modal( "About Service Suggestion Engine (SSE) Extensions", out, { "Close" : hide_modal } );
+} // $.wsextensions.showAboutDialog
+
+## Show the issues dialog
+$.wsextensions.showIssuesDialog = function() {
+    var out = '';
+    var n   = $.wsextensions.logbuffer.length;
+    out += $.wsextensions.renderDoc($.wsextensions.doc.issues);
+    out += '<textarea rows="10" cols="80">';
+    for (var i = 0, len = n; i < len; ++i) {
+        out += $.wsextensions.logbuffer[i] + '\n';
+    } // for
+    out += '</textarea>';
+    out += $.wsextensions.renderDoc($.wsextensions.doc.footer);
+    show_modal( "Report Issues about Sevice Suggestion Engine (SSE) Extensions", out, { "Close" : hide_modal } );
+} // $.wsextensions.showIssuesDialog
 
 ## Handler to show suggestion type help information
 $('#suggestion-type-help').click(function() {
-    
     var out = '';
-
-    out += '<p>';
-    out += 'The Service Suggestion Engine (SSE) provides three types of service suggestion.';
-    out += '</p>';
-	
-    out += '<p>';
-    out += 'In order to use the SSE, at least one tool needs to be on the current Workflow Canvas. ';
-    out += 'Tools in the workflow are added to various lists by the user depending on the type of suggestion chosen and the roles these tools should take. ';
-    out += 'The sections below provide information about the three different types of suggestion and their corresponding lists. ';
-    out += '</p>';
-
-    out += '<h4>';
-    out += 'Forward Suggestion';
-    out += '<img style="max-height: 45px; padding-left: 1em;" alt="type" src="http://i.imgur.com/ex27zRI.png" align="right">';
-    out += '</h4>';
-
-    out += '<p>';
-    out += 'When a "Forward Suggestion" is chosen, the SSE will suggest a list of available tools, ranked according to how well they match some desired functionality and their compatibility with the <em>outputs</em> of tools chosen from the Workflow Canvas. ';
-    out += 'The user chooses these <strong>Tools to Feed From</strong> by selecting them from the corresponding drop-down menu that appears in the "Setup & Run Query" panel to the right of the Workflow Canvas. ';
-    out += 'In the image to the right, the empty box represents the <em>Tools to feed From</em> and the question mark (?) box represents tools that the user would like suggested. ';
-    out += '</p>';
-
-    out += '<h4>';
-    out += 'Backward Suggestion';
-    out += '<img  style="max-height: 45px; padding-left: 1em;" alt="type" src="http://i.imgur.com/XoD0WCw.png" align="right">';
-    out += '</h4>';
-
-    out += '<p>';
-    out += 'When a "Backward Suggestion" is chosen, the SSE will suggest a list of available tools, ranked according to how well they match some desired functionality and their compatibility with the <em>inputs</em> of tools chosen from the Workflow Canvas. ';
-    out += 'The user chooses these <strong>Tools to Feed Into</strong> by selecting them from the corresponding drop-down menu that appears in the "Setup & Run Query" panel to the right of the Workflow Canvas. ';
-    out += 'In the image to the right, the empty box represents the <em>Tools to feed Into</em> and the question mark (?) box represents tools that the user would like suggested. ';
-    out += '</p>';
-
-    out += '<h4>';
-    out += 'Bidirectional Suggestion';
-    out += '<img  style="max-height: 45px; padding-left: 1em;" alt="type" src="http://i.imgur.com/MfTWkIm.png" align="right">';
-    out += '</h4>';
-
-    out += '<p>';
-    out += 'When a "Bidirectional Suggestion" is chosen, the SSE will suggest a list of available tools, ranked according to how well they match some desired functionality and their compatibility with the <em>inputs</em> and <em>outputs</em> of certain tools chosen from the Workflow Canvas. ';
-    out += 'The user chooses <strong>Tools to Feed From</strong> and <strong>Tools to Feed Into</strong> by selecting them from the corresponding drop-down menus that appears in the "Setup & Run Query" panel to the right of the Workflow Canvas. ';
-    out += 'In the image to the right, the left box represents the <em>Tools to feed From</em>, the right box represents the <em>Tools to feed Into</em>, and the question mark (?) box represents tools that the user would like suggested. ';
-    out += '</p>';
-
-    out += '<hr />';
-
-    out += '<p>';
-    out += '<small style="float: left;">';
-    out += 'Last Updated: 2013-04-16';
-    out += '</small>';
-    out += '<small style="float: right;">';
-    out += '<strong>Need more information?</strong> ';
-    out += 'Click <a href="http://mango.ctegd.uga.edu/jkissingLab/SWS/sse.html">here</a> to see more documentation.';
-    out += '</small>';
-    out += '</p>';
-
+    out += $.wsextensions.renderDoc($.wsextensions.doc.suggestion_types);
+    out += $.wsextensions.renderDoc($.wsextensions.doc.footer);
     show_modal( "Help: Types of Service Suggestion", out, { "Close" : hide_modal } );
 });
 
 ## Handler to show goal help information
 $('#suggestion-goal-help').click(function() {
     var out = '';
-    
-    out += '<p>';
-    out += 'The Service Suggestion Engine (SSE) allows you to specify a goal that suggested tools should fulfill. ';
-    out += 'This goal can be expressed in two ways: ';
-    out += '</p>';
-
-    out += '<ol>';
-
-    out += '<li style="padding-bottom: 1em;">';
-    out += 'A simple description of what you are trying to do/find (e.g., "multiple sequence alignment" or "phylogentic protein distance"). ';
-    out += '</li>';
-
-    out += '<li>';
-    out += 'An IRI or label of a known term in an ontology (e.g., "compute protein evolution distance objective" or "http://purl.obolibrary.org/obo/OBIws_0000180"). ';
-    out += '</li>';
-
-    out += '</ol>';
-
-    out += '<hr />';
-
-    out += '<p>';
-    out += '<small style="float: left;">';
-    out += 'Last Updated: 2013-04-16';
-    out += '</small>';
-    out += '<small style="float: right;">';
-    out += '<strong>Need more information?</strong> ';
-    out += 'Click <a href="http://mango.ctegd.uga.edu/jkissingLab/SWS/sse.html">here</a> to see more documentation.';
-    out += '</small>';
-    out += '</p>';
-
+    out += $.wsextensions.renderDoc($.wsextensions.doc.goal);
+    out += $.wsextensions.renderDoc($.wsextensions.doc.footer);
     show_modal( "Help: Service Suggestion Goals", out, { "Close" : hide_modal } );
 });
 
-## Handler to show goal help information
+## Handler to show result help information
 $('#suggestion-result-help').click(function() {
     var out = '';
-    
-    out += '<p>';
-    out += 'The Service Suggestion Engine (SSE) provides tool suggestions to the user as a ranked list, scored in descending order from 1.0 (best) to 0 (worst). ';
-    out += 'The implementations of the algorithms used by the SSE expands upon our previous work [1]. ';
-
-    out += '<h4>Inputs and Scores</h4>';
-
-    out += 'With respect to Galaxy, the SEE considers four things in order to provide suggestions: ';
-    out += '</p>';
-
-    out += '<ol>';
-
-    out += '<li style="padding-bottom: 1em;">';
-    out += '<strong>Direction:</strong> Helps the user specify where he or she would like to place the suggested tools in the workflow; ';
-    out += '</li>';
-
-    out += '<li style="padding-bottom: 1em;">';
-    out += '<strong>Workflow Tool Lists: </strong> Depending on <em>direction</em>, the user adds tools currently on the Workflow Canvas to one or more lists, depending on the relationship each tool should have with tools to be suggested; ';
-    out += '</li>';
-
-    out += '<li style="padding-bottom: 1em;">';
-    out += '<strong>Candidate Tool List:</strong> The list of tools, added to Galaxy, that are available for use on the Workflow Canvas; and ';
-    out += '</li>';
-
-    out += '<li>';
-    out += '<strong>Goal / Functionality:</strong> A description of what the suggested operations should help accomplish, provided as either keywords (e.g., "multiple sequence alignment") or as IRI to a term in an ontology. ';
-    out += '</li>';
-
-    out += '</ol>';
-
-    out += '<p>';
-    out += 'The scores given to each tool in the results (a subset of available tools) is the weighted sum of two subscores:  ';
-    out += '</p>';
-
-    out += '<ul>';
-
-    out += '<li style="padding-bottom: 1em;">';
-    out += '<strong>Data Mediation (<code>dm</code>):</strong> This sub-score is intended to measure how well the inputs and outputs of a tool can be matched to tools in the various lists chosen by the user, either directly or through some form of data mediation. ';
-    out += 'It is based on various structural, semantic and syntactic similarity metrics. ';
-    out += '</li>';
-
-    out += '<li>';
-    out += '<strong>Functionality (<code>fn</code>):</strong> This sub-score is determined by how well a tool matches the goal specified by the user. ';
-    out += 'If no goal is specified, then the overall score for a suggested tool is based only on the <code>dm</code> sub-score. ';
-    out += '</li>';
-
-    out += '</ul>';
-
-    out += '<p>';
-    out += 'More detailed information about how the exact scores are calculated can be found in [2]. ';
-    out += 'For examples, please see the link to more documentation at the bottom of this popup. ';
-    out += '</p>';
-
-    out += '<h4>References</h4>';
-
-    out += '<p><small>[1] <a href="http://dx.doi.org/10.1109/SERVICES.2010.65" target="_blank"><img src="http://i.imgur.com/IV43Kvj.png" border="0"></a> R. Wang, S. Ganjoo, J.A. Miller, and E.T. Kraemer. "Ranking-Based Suggestion Algorithms for Semantic Web Service Composition," In <em>Proceedings of the 2010 World Congress on Services (SERVICES-1)</em>, 2010, pp 606-613, IEEE.</small></p>';
-    out += '<p><small>[2] <a href="http://dx.doi.org/10.3233/978-1-61499-084-0-29" target="_blank"><img src="http://i.imgur.com/IV43Kvj.png" border="0"></a> A. Dhamanaskar, M. E. Cotterell, J. Z. Zheng, J. A. Miller, J. C. Kissinger, and C. J. Stoeckert, "Suggestions in Galaxy Workflow Design Based on Ontologically Annotated Services," in <em>Proceedings of the 7th International Conference on Formal Ontology in Information Systems (FOIS\'12)</em>, 2012, pp. 29-42. IOS.</small></p>';
-
-    out += '<hr />';
-
-    out += '<p>';
-    out += '<small style="float: left;">';
-    out += 'Last Updated: 2013-04-16';
-    out += '</small>';
-    out += '<small style="float: right;">';
-    out += '<strong>Need more information?</strong> ';
-    out += 'Click <a href="http://mango.ctegd.uga.edu/jkissingLab/SWS/sse.html">here</a> to see more documentation.';
-    out += '</small>';
-    out += '</p>';
-
+    out += $.wsextensions.renderDoc($.wsextensions.doc.results);
+    out += $.wsextensions.renderDoc($.wsextensions.doc.footer);
     show_modal( "Help: Ranked Suggestion Results", out, { "Close" : hide_modal } );
 });
 
 ## Expand and Collapse Sections
-$('[id^="wsx-section"]').each(function() {
-    
+$('[id^="wsx-section"]').each(function() {   
     var section_id = $(this).attr('id');
-    
     $('[class^="wsx-toggle"]', this).click(function() {
-
         if ($(this).hasClass('wsx-toggle-shrink')) {
 	    $(this).removeClass('wsx-toggle-shrink').addClass('wsx-toggle-expand');
 	    $(this).html('[+]');
@@ -273,7 +179,6 @@ $('[id^="wsx-section"]').each(function() {
 	    $(this).html('[-]');
 	    $('#' + section_id + '-body').show();
 	} // if
-			
     });
 });
 
@@ -284,7 +189,7 @@ $('#suggestionEnginePredecessorList').change(function() {
     var itm = $("<li></li>")
     
     itm.attr('id', name);
-    itm.html(name)
+    itm.html(name);
     itm.click(function() {
         itm.remove();
     });
@@ -314,22 +219,7 @@ $('#suggestionEngineSuccessorList').change(function() {
 });
 
 ## setup the candidate list
-$wsxCandidates = function() {
-
-    var service = function(wsdl) {
-    	return { 
-	    "descriptionDocument": wsdl,
-	    "ontologyURI": null     
-	};
-    };
-
-    var operation = function (name, ws, note) {
-    	return {
-	    "operationName": name,
-	    "service": service(ws),
-	    "note": note
-	};
-    }; 
+$.wsextensions.getCandidateOps = function() {
 
     ## This a simple WebServiceTool python class that we use instead of Galaxy's
     ## built-in Tool class. We do this because there seems to be, at the time of
@@ -366,19 +256,13 @@ $wsxCandidates = function() {
     ## STEP 1 - Gather all the information we can about the Web Service Tools
     ##          that are both available to the current user and workflow
     ##          compliant.
-    wsextensions_log("Gathering candidate operations.");
+    $.wsextensions.log("Gathering candidate operations.");
 
     ## The name of the Tool sections where the Web Service Tools are located.
     ## @TODO make this an array, just in case.
     var candidateOpsSections = "Select Web Service Workflow Tool";
 
     ## This array will hold the candidate operations.
-    ## They contents of this array should each be in the form of 
-    ##   <operation>@<wsdl>
-    ## or
-    ##   <operation>@<wsdl>@<toolid>
-    ## Including the Tool ID will make it possible add a candidate operation
-    ## into the workflow directly from the result list.
     var candidateOps = [];
 
     ## Iterate over all the Tools in the Tool Panel
@@ -405,9 +289,7 @@ $wsxCandidates = function() {
                             %>
 
                             ## Push this Tool into our array
-
-			    var op = operation("${wsop}", "${wsurl}", "${wstoolid}");
-			    console.log(JSON.stringify(op));
+			    var op = $.wsextensions.models.operation("${wsop}", "${wsurl}", "${wstoolid}");
                             candidateOps.push(op);
 
                         %endif
@@ -419,11 +301,9 @@ $wsxCandidates = function() {
 
     %endfor
 
-    console.log(JSON.stringify(candidateOps));
-
     return candidateOps;
 
-}; 
+}; // $.wsextensions.getCandidateOps
 
 ## Register handler for switching suggestion types
 $('#suggestionEngineSuggestionTypeList').change(function() {
@@ -482,7 +362,31 @@ $('#suggestionEngineSuggestionTypeList').change(function() {
 
 });
 
-function wsextensions_render_documentation(response) {
+## Show the input documentation dialog
+$.wsextensions.showInputDocDialog = function(node, name) {
+
+    var url     = $('input[name="url"]', $(node.form_html)).attr('value');
+    var wsname  = node.name.split(" ")[0];
+    var op      = node.name.split(" ")[1];
+    var param   = name;
+    var request = $.wsextensions.props.endpoint
+    	+ "/documentationSuggestion/get/json"
+        + "?wsdl="            + encodeURI(url)
+        + "&param="           + param 
+
+    ## make a JSON request
+    $.wsextensions.getJSON(request + "&callback=?", $.wsextensions.renderInputDocResponse, 30 * 1000);
+
+    ## message to show
+    var msg = '<div id="wsx-suggest-doc-response"><img src="/static/images/yui/rel_interstitial_loading.gif" /></div>';
+    
+    ## show the modal
+    show_modal( 'Documentation for "' + op + " " + param + '"', msg, { "Close" : hide_modal } );
+
+} // $.wsextensions_show_documentation
+
+## Render Documentation retrieved from SSE
+$.wsextensions.renderInputDocResponse = function(response) {
 
     ## The number of lines returned.
     var n = response.length;
@@ -518,46 +422,35 @@ function wsextensions_render_documentation(response) {
 
     } // if 
 
-} // wsextensions_render_documentation
-$.wsextensions_render_documentation = wsextensions_render_documentation
+} // $.wsextensions.renderInputDocResponse
 
 ## Show the input documentation dialog
-function wsextensions_suggest_values(node, name) {
+$.wsextensions.showInputSuggestDialog = function(node, name) {
     
     ## This is the current node.        
     ## var node = workflow.nodes[node_key];
     var wsurl  = $('input[name="url"]', $(node.form_html)).attr('value');
-    var wsname = node.name.split(".")[0];
-    var wsop   = node.name.split(".")[1];
-    var param  = name;
-    
-    $.wsxDocNode  = node;
-    $.wsxDocWsdl  = wsurl;
-    $.wsxDocName  = wsname;
-    $.wsxDocOp    = wsop;
-    $.wsxDocParam = param;
-
-    wsextensions_log("Rendering the input documentation box");
-    wsextensions_log(wsurl);    
-
-    var request = WSEXTENSIONS_SE_SERVICE_URI
+    var wsname  = node.name.split(" ")[0];
+    var wsop    = node.name.split(" ")[1];
+    var param   = name;
+    var request = $.wsextensions.props.endpoint
     	+ "/parameterValueSuggestion/get/json"
         + "?wsdl="            + encodeURI(wsurl)
         + "&param="           + param 
 
     ## make a JSON request
-    $.getJSON(request + "&callback=?", wsextensions_render_suggest_values);
+    $.wsextensions.getJSON(request + "&callback=?", $.wsextensions.renderInputSuggestResponse, 5 * 1000);
 
     ## message to show
     var msg = '<div id="wsx-suggest-values-response"><img src="/static/images/yui/rel_interstitial_loading.gif" /></div>';
     
     ## show the modal
-    show_modal( "Suggest input for " + $.wsxDocNode.name + " " + $.wsxDocParam, msg, { "Close" : hide_modal } );
+    show_modal( 'Suggested Input Values for "' + wsop + ' ' + param + '"', msg, { "Close" : hide_modal } );
 
-} // wsextensions_suggest_values
-$.wsextensions_suggest_values = wsextensions_suggest_values
+} // $.wsextensions.showInputSuggestDialog
 
-function wsextensions_render_suggest_values(response) {
+## Render suggested input values returned from SSE
+$.wsextensions.renderInputSuggestResponse = function(response) {
 
     ## The number of lines returned.
     var n = response.length;
@@ -594,97 +487,14 @@ function wsextensions_render_suggest_values(response) {
     } // if
 
 } // wsextensions_render_suggest_values
-$.wsextensions_render_suggest_values = wsextensions_render_suggest_values
-
-## Show the about dialog
-function wsextensions_show_about() {
-    var out = '';
-
-    out += '<p>';
-    out += '<strong>Product Name:</strong> Service Suggestion Engine (SSE) Extensions';
-    out += '</p>';
-
-    out += '<p>';
-    out += '<strong>Product Version:</strong> ' + WSEXTENSIONS_VERSIONS;
-    out += '</p>';
-
-    out += '<p>';
-    out += 'Service Suggestion Engine (SSE) Extensions for Galaxy is based on software from the University of Georgia Web Services Annotations Group, which has been licensed under an MIT style license (see below). ';
-    out += '</p>';
-
-    out += '<p>';
-    out += 'For more information, please visit <a href="http://mango.ctegd.uga.edu/jkissingLab/SWS/" target="_blank">http://mango.ctegd.uga.edu/jkissingLab/SWS/</a>. ';
-    out += '</p>';
-
-    out += '<p>';
-    out += 'The user interface for this tool was implemented by <a href="http://michaelcotterell.com/">Michael E. Cotterell</a>. ';
-    out += '</p>';
-
-    out += '<hr />';
-
-    out += '<small>';
-
-    out += '<p>';
-    out += 'Copyright (c) 2013 UGA Web Services Annotations Group and the University of Georgia ';
-    out += '</p>';
-
-    out += '<p>';
-    out += 'Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: ';
-    out += '</p>';
-
-    out += '<p>';
-    out += 'The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. ';
-    out += '</p>';
-
-    out += '<p>';
-    out += 'THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.';
-    out += '</p>';
-
-    out += '</small>';
-
-    out += '<hr />';
-
-    out += '<p>';
-    out += '<small style="float: left;">';
-    out += 'Last Updated: 2013-04-16';
-    out += '</small>';
-    out += '<small style="float: right;">';
-    out += '<strong>Need more information?</strong> ';
-    out += 'Click <a href="http://mango.ctegd.uga.edu/jkissingLab/SWS/sse.html">here</a> to see more documentation.';
-    out += '</small>';
-    out += '</p>';
-
-    show_modal( "About Web Service Extensions", out, { "Close" : hide_modal } );
-}
-
-## The folowing assignments make the logging functions available globally.
-## @author Michael Cotterell <mepcotterell@gmail.com>
-$.wsextensions_log      = wsextensions_log;
-$.wsextensions_error    = wsextensions_error;
-$.wsextensions_show_log = wsextensions_show_log;
-
-## Add the dropdown menu for WS Extensions
-$("#workflow-options-button").replaceWith('<a id="workflow-suggestions-button" class="panel-header-button popup" href="#">Service Suggestion Extensions</a> <a id="workflow-options-button" class="panel-header-button popup" href="#">Options</a>');
-
-## Add the suggestion engine popup menu to the Galaxy worflow editor.
-## @author Michael Cotterell <mepcotterell@gmail.com>
-make_popupmenu( $("#workflow-suggestions-button"), {
-    "Suggestion Engine": wsextensions_make_se_panel,
-    "About": wsextensions_show_about,
-    "Report Bug": function() {
-        window.open('https://github.com/WSAnnotations/GalaxyExtensions/issues');
-    },
-    "View Debug Log" : wsextensions_show_log
-});
 
 ## Sets up the right panel in the workflow editor for use with the Suggestion
 ## Engine. This gets run when the suggestion engine popup menu button is 
 ## clicked.
-## @author Michael Cotterell <mepcotterell@gmail.com>
-function wsextensions_make_se_panel() {
+$.wsextensions.showMainPanel = function() {
 
     ## Log it
-    wsextensions_log("Preparing the right panel for the Suggestion Engine interface.");    
+    $.wsextensions.log("Rendering SSE Panel");    
         
     ## deselect the active node in the workflow, if any.
     workflow.clear_active_node();
@@ -712,26 +522,22 @@ function wsextensions_make_se_panel() {
             $('#suggestionEngineSuccessorList').append($('<option></option>').val(node.name).html("Step " + node.id + " - " + node.name));
         } // if
 
-    } // for           
-
-    ## Log it
-    wsextensions_log("Rendering the Suggestion Engine interface in the right panel.");  
+    } // for            
 
     ## show the suggestion engine div
     $('#suggestion-engine').show();
 
     ## register the click event for the run button            
-    $("#run-se-button").click(wsextensions_se_request);
+    $("#run-se-button").click($.wsextensions.querySSE);
 
-} // function wsextensions_make_se_panel()     
+} // $.wsextensions.showMainPanel    
 
 ## Sends the information to the Suggestion Engine Web Service, parses
 ## the results, and renders them to the page.
-## @author Michael Cotterell <mepcotterell@gmail.com>
-function wsextensions_se_request() {
+$.wsextensions.querySSE = function() {
 
     ## register the click event for the run button            
-    $("#run-se-button").click(wsextensions_se_request);
+    //$("#run-se-button").click(wsextensions_se_request);
 
     // valid url function from http://stackoverflow.com/questions/5717093/check-if-a-javascript-string-is-an-url
     var validURL = function (str) {
@@ -748,46 +554,21 @@ function wsextensions_se_request() {
         } // if
     };
 
-    var service = function(wsdl) {
-    	return { 
-	    "descriptionDocument": wsdl,
-	    "ontologyURI": null     
-	};
-    };
-
-    var operation = function (name, ws, note) {
-    	return {
-	    "operationName": name,
-	    "service": service(ws),
-	    "note": note
-	};
-    }; 
-
-    var request = function(direction, wops, wops2, cops, df) {
-    	return {
-            "direction": direction,
-            "desiredFunctionality": df,
-            "candidates": cops,
-	    "workflow": wops,
-	    "workflow2": wops2
-	};
-    };
-
     ## Log it
-    wsextensions_log("Preparing to make a request to the Suggestion Engine Web Service.");
+    $.wsextensions.log("Preparing to query SSE.");
 
     ## Grab candidate operations
-    var candidateOps = $wsxCandidates();
+    var candidateOps = $.wsextensions.getCandidateOps();
 
     ## Did we find any candidate operations? If not, let us register an error.
     if (candidateOps.length == 0) {
-        wsextensions_error("Could not find any candidate operations.");
+        $.wsextensions.error("Could not find any candidate operations.");
     } // if
 
     ## STEP 2 - Gather information about the current state of the workflow. 
-    wsextensions_log("Gathering current workflow operations.");
+    $.wsextensions.log("Gathering current workflow operations.");
 
-    ## These arrasy will hold the workflow operations.
+    ## These arrays will hold the workflow operations.
     var workflowOps1 = [];
     var workflowOps2 = [];
     var allOps = []; 
@@ -803,8 +584,6 @@ function wsextensions_se_request() {
         if(node.type == 'tool') {
 
             ## Get the operation name.
-            ## Web Service Tool nodes have names in the form 
-            ## of <service>.<operation>
             var wsop = node.name.split(" ")[1];
 
             ## Get the operation's WSDL URL
@@ -817,7 +596,7 @@ function wsextensions_se_request() {
 	    if (validURL(wsurl)) {
 
                 ## create operation
-                var op = operation(wsop, wsurl, wstoolid);
+                var op = $.wsextensions.models.operation(wsop, wsurl, wstoolid);
 
                 ## add it to allOps
                 allOps.push(op);
@@ -825,7 +604,7 @@ function wsextensions_se_request() {
                 ## is it in the pred list?
 		$("#wsx-pred-list ul").find('li').each(function(){
                     var current = $(this);
-                    if (current.text().indexOf(wsop) !== -1) {
+                    if (current.text().indexOf(wsop) != -1) {
 	    	        workflowOps1.push(op)
                     } // if
                 });
@@ -833,7 +612,7 @@ function wsextensions_se_request() {
                 ## is it in the succ list?
                 $("#wsx-succ-list ul").find('li').each(function(){
                     var current = $(this);
-                    if (current.text().indexOf(wsop) !== -1) {
+                    if (current.text().indexOf(wsop) != -1) {
 	    	        workflowOps2.push(op)
                     } // if
                 });
@@ -849,6 +628,7 @@ function wsextensions_se_request() {
     if (allOps.length == 0) {
 
         var msg = 'In order to use the Service Suggestion Engine (SSE), at least one tool needs to be in the current Workflow Canvas. ';
+        $.wsextensions.log(msg);
         show_modal('Warning - No Tools on Workflow Canvas', msg, { "Close" : hide_modal } );
 
     } else {
@@ -875,7 +655,7 @@ function wsextensions_se_request() {
         $("#suggestion-engine-results-progress").show();
 
         ## STEP 3 - Gather all the other information from the form
-        wsextensions_log("Gathering information from the form in the Suggestion Engine interface.");
+        $.wsextensions.log("Gathering information from the form.");
 
         ## The desired functionality. Either some string similar to an operation
         ## or a URI to some concept in an ontology.
@@ -888,41 +668,38 @@ function wsextensions_se_request() {
         });
 
         ## create the request
-        var payload = request(direction, workflowOps1, workflowOps2, candidateOps, desiredFunctionality);
-        wsextensions_log('Generated the SSE-WS request payload: ' + JSON.stringify(payload))
-
-        var jsonURI = WSEXTENSIONS_SE_SERVICE_URI
+        var payload = $.wsextensions.models.request(direction, workflowOps1, workflowOps2, candidateOps, desiredFunctionality);
+        var jsonURI = $.wsextensions.props.endpoint
             + "/serviceSuggestion/get/jsonp"
             + "?payload=" + JSON.stringify(payload);
-
-        wsextensions_log('Using the following URI (jQuery will add &callback=?): ' + jsonURI)
     
         ## make a JSON request
-        $.getJSON(jsonURI + "&callback=?", wsextensions_se_parse_response);
+        $.wsextensions.getJSON(jsonURI + "&callback=?", $.wsextensions.renderQueryResponse, 30 * 1000);
 
     } // if
 
-} // function wsextensions_se_request
+} // $.wsextensions.querySSE
 
 ## Parses the response from the Suggestion Engine Web Service and renders the
 ## results to the Suggestion Engine interface within the workflow editor. This
-## function is only called if the jQuery JSON request was successful.
-## @author Michael Cotterell <mepcotterell@gmail.com>
-function wsextensions_se_parse_response(suggestions) {            
+$.wsextensions.renderQueryResponse = function(suggestions) {            
 
     ## Log it
-    wsextensions_log('Processing the SSE-WS response payload: ' + JSON.stringify(suggestions));
+    $.wsextensions.log('Processing the SSE-WS response payload: ' + JSON.stringify(suggestions));
 
     ## The number of suggested operation returned.
     var n = suggestions.operations.length;
+
+    ## The default number of results to show
+    var c = 5;
     
     ## Update counts
     $('#wsx-result-count-info').show();
-    $('#wsx-result-count-show').text(5);
+    $('#wsx-result-count-show').text(c);
     $('#wsx-result-count').text(n);
     
     ## if there are more than 5 results, then display "Show All"
-    if (n > 5) {
+    if (n > c) {
         $('#wsx-result-more').show();         
         $('#wsx-result-more-button').click(function() {
             $('#wsx-result-list').find('li').each(function(){
@@ -938,46 +715,23 @@ function wsextensions_se_parse_response(suggestions) {
 
     ## If there were no suggestions returned then raise an error.
     if (n == 0) {
-        wsextensions_error("Received a response from the Suggestion Engine Web Service, but it did not contain any results");
+        $.wsextensions.error("Received a response from the Suggestion Engine Web Service, but it did not contain any results.");
+	return true;
         ## @TODO handle this more gracefully
     } // if    
-    
-    $.wsxSuggestions = suggestions
-
+   
     ## prepare output list
     var out = '<ul id="wsx-result-list" style="list-style-type: square;">';
 
     ## loop over suggestions
     for (var i = 0, len = n; i < len; ++i) {
 
-        ## Each suggestion is an array of the following:
-        ## 0: Operation Name
-        ## 1: WSDL URL
-        ## 2: Rank Score
-        ## 3: Unweighted Data Mediation Sub-score
-        ## 4: Unweighted Functionality Sub-score
-        ## 5: Unweighted Preconditions / Effects Sub-score
-        ## 6: Galaxy tool_id
-
-        ## The operation name.         
-        var op = suggestions.operations[i].operationName;
-
-        ## The operation's WSDL URL.
-        var wsdl = suggestions.operations[i].service.descriptionDocument;
-
-        ## The operation's rank score.
-        var rank = suggestions.operations[i].score;
-
-        ## The operation's data mediation sub-score.
-        var dm = suggestions.operations[i].dataMediationScore;
-
-        ## The operation's functionality sub-score.
-        var fn = suggestions.operations[i].functionalityScore;
-
-        ## The operation's preconditons/effects sub-score.
-        var pe = suggestions.operations[i].preconditionEffectScore;
-
-        ## The short name of the wsdl, derived from the WSDL URL
+        var op         = suggestions.operations[i].operationName;
+        var wsdl       = suggestions.operations[i].service.descriptionDocument;
+        var rank       = suggestions.operations[i].score;
+        var dm         = suggestions.operations[i].dataMediationScore;
+        var fn         = suggestions.operations[i].functionalityScore;
+        var pe         = suggestions.operations[i].preconditionEffectScore;
         var short_wsdl = wsdl.substring(wsdl.lastIndexOf('/') + 1);
 
         ## The web service name, derived from the short wsdl name
@@ -1001,7 +755,7 @@ function wsextensions_se_parse_response(suggestions) {
             ## Otherwise, let them know that they add this tool using Radiant Web.
             link = service + ' ' + op;
 
-        }
+        } // if
 
         ## Prepare the result for rendering
         if (i < 5) {
@@ -1009,6 +763,7 @@ function wsextensions_se_parse_response(suggestions) {
         } else {
             out += '<li style="display:none;">';
         } // if
+
         out += link + "<br />";
         ## out += "<a href=\"" + wsdl + "\" style=\"color:#FF66FF;\"><span style=\"color:#FF66FF;\"><small>" + short_wsdl + "</small></span></a>" + "<br />";
         ## out += "<span style=\"color:#999999;\"><small>" + rank + " (DM: " + dm + ", FN: " + fn + ")</small></span>" + "<br />";
@@ -1022,7 +777,7 @@ function wsextensions_se_parse_response(suggestions) {
     out += "</ul>";
 
     ## Log it
-    wsextensions_log("Response parsed, rendering results to the Suggestion Engine interface.");
+    $.wsextensions.log("Response parsed. Rendering results in the SSE Panel.");
 
     ## Hide the progress bar.
     $("#suggestion-engine-results-progress").hide();
@@ -1030,7 +785,17 @@ function wsextensions_se_parse_response(suggestions) {
     ## display the results
     $("#suggestion-engine-results-content").replaceWith('<div id="suggestion-engine-results-content">' + out + '</div>');
 
-} // function wsextensions_se_parse_response
+} // $.wsextensions.renderQueryResponse
 
+## Add the dropdown menu for WS Extensions
+$("#workflow-options-button").replaceWith('<a id="workflow-suggestions-button" class="panel-header-button popup" href="#">Service Suggestion Extensions</a> <a id="workflow-options-button" class="panel-header-button popup" href="#">Options</a>');
+
+## Add the suggestion engine popup menu to the Galaxy worflow editor.
+make_popupmenu( $("#workflow-suggestions-button"), {
+    "Suggestion Engine": $.wsextensions.showMainPanel,
+    "Report Issues":     $.wsextensions.showIssuesDialog,
+    "About":             $.wsextensions.showAboutDialog,
+    "View Debug Log":    $.wsextensions.showLogDialog
+});
 
 
