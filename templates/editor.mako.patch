@@ -1,0 +1,24 @@
+--- galaxy-test/templates/webapps/galaxy/workflow/editor.mako	2013-05-13 13:23:06.397141972 -0400
++++ galaxy-dist/templates/webapps/galaxy/workflow/editor.mako	2013-05-13 13:17:39.018580549 -0400
+@@ -565,6 +565,11 @@
+                 var id = $(this).parents( "div.form-row" ).attr( 'id' );
+                 var b = $('<a class="popup-arrow" id="popup-arrow-for-' + id + '">&#9660;</a>');
+                 var options = {};
++
++		## Include the worflow editor Web Service extensions for input values.
++		## @author Michael E. Cotterell <mepcotterell@gmail.com>
++        	<%include file="wsextensions/wsextensions_include2.mako"/>
++
+                 $(this).find( "button" ).each( function() {
+                     var name = $(this).attr( 'name' );
+                     var value = $(this).attr( 'value' );
+@@ -1061,5 +1066,9 @@
+             </div></div>
+         </div>
+ 
++	## Include Galaxy Web Service Extensions Logic File.
++	## @author Michael E. Cotterell <mepcotterell@gmail.com>
++        <%include file="wsextensions/wsextensions_include1.mako"/>
++
+     </div>
+ </%def>
