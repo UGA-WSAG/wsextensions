@@ -4,7 +4,7 @@
 
             <div class="toolFormTitle">Service Suggestion Engine</div>
 
-            <div class="form-row">Version: 1.5</div>
+            <div class="form-row">Version: 1.6</div>
 
             <div id="wsx-section-options" class="metadataFormTitle">
 	    <span class="wsx-toggle-shrink" style="cursor: hand; cursor: pointer;">[-]</span>            

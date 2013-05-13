@@ -5,7 +5,7 @@
 
 <%
     wsextensions_product = "Service Suggestion Engine (SSE) Extensions"
-    wsextensions_version = "1.5"
+    wsextensions_version = "1.6"
     wsextensions_enpoint = "http://wsannotations.ctegd.uga.edu/SSE-WS/services"
 %>
 
