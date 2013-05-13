@@ -3,12 +3,19 @@
 ##
 ## NOTE: This file is included in editor.mako via a mako include.
 
+<%
+    wsextensions_product = "Service Suggestion Engine (SSE) Extensions"
+    wsextensions_version = "1.5"
+    wsextensions_enpoint = "http://wsannotations.ctegd.uga.edu/SSE-WS/services"
+%>
+
 $.wsextensions = {};
 $.wsextensions.logbuffer = [];
 
 $.wsextensions.props = {
-    'version':  '1.5',
-    'endpoint': 'http://wsannotations.ctegd.uga.edu/SSE-WS/services',
+    'product':  '${wsextensions_product}', 
+    'version':  '${wsextensions_version}',
+    'endpoint': '${wsextensions_enpoint}',
 }; // $.wsextensions.props
 
 $.wsextensions.models = {
@@ -41,12 +48,12 @@ $.wsextensions.models = {
 }; // $.wsextensions.models
 
 $.wsextensions.doc = {
-    'about':            function() {/* <%include file="wsextensions/doc/about.html"/> */},
-    'issues':           function() {/* <%include file="wsextensions/doc/issues.html"/> */},
-    'goal':             function() {/* <%include file="wsextensions/doc/goal.html"/> */},
-    'results':          function() {/* <%include file="wsextensions/doc/results.html"/> */},
-    'suggestion_types': function() {/* <%include file="wsextensions/doc/suggestion_types.html"/> */},
-    'footer':           function() {/* <%include file="wsextensions/doc/footer.html"/> */},
+    'about':            function() {/* <%include file="doc/about.html"/> */},
+    'issues':           function() {/* <%include file="doc/issues.html"/> */},
+    'goal':             function() {/* <%include file="doc/goal.html"/> */},
+    'results':          function() {/* <%include file="doc/results.html"/> */},
+    'suggestion_types': function() {/* <%include file="doc/suggestion_types.html"/> */},
+    'footer':           function() {/* <%include file="doc/footer.html"/> */},
 }; // $.wsextensions.doc
 
 ## This function logs a message to the logbuffer
