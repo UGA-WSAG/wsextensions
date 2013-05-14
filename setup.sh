@@ -272,7 +272,7 @@ function do_clean_prev_sse {
 
     EDITOR_ORIG="$INSTALLER_GALAXY_PATH/templates/webapps/galaxy/workflow/editor.mako"
     HG_RET=$(hg revert -q "$EDITOR_ORIG")
-    print_item_good "revert" "'editor.mako' successfully reverted"
+    print_item_good "hg" "'editor.mako' successfully reverted"
 
 } # do_clean_prev_sse
 
@@ -330,7 +330,7 @@ function do_patch_run_sh {
         HG_RET="'run.sh' successfully reverted"
     fi
 
-    print_item_good "revert" "$HG_RET"
+    print_item_good "hg" "$HG_RET"
 
     PATCH_DATE=$(date +"%Y.%m.%d.%H.%M.%S")
     PATCH_FILE="/tmp/run.sh.$PATCH_DATE.patch"
