@@ -159,6 +159,20 @@ function check_env {
 	exit
     fi
 
+    INSTALLER_HG_CHECK=" "
+    INSTALLER_HG_PATH="$(which hg)"
+
+    if [ $? -ne 0 ]; then
+        INSTALLER_HG_CHECK="Need mercurial utility."
+    fi
+
+    if [ "$INSTALLER_HG_CHECK" = " " ]; then
+        print_item_good "hg" "$INSTALLER_HG_PATH"
+    else
+        print_item_bad "hg" "$INSTALLER_HG_PATH" "$INSTALLER_HG_CHECK"
+	exit
+    fi
+
 } # check env
 
 function check_prev_installs {
