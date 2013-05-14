@@ -4,6 +4,7 @@ INSTALLER_TITLE="Galaxy Web Service Extensions"
 INSTALLER_PWD=$(pwd)
 INSTALLER_PATCH_PATH=""
 INSTALLER_GALAXY_PATH="$(dirname $1)/$(basename $1)"
+INSTALLER_GALAXY_BRANCH=""
 INSTALLER_PYTHON_PATH=""
 INSTALLER_JAVA_PATH=""
 
@@ -88,7 +89,7 @@ function check_java {
     fi
 
     JAVA_VERSION=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}')
-    JAVA_VERSION=$( echo `expr "$JAVA_VERSION$" : '\([0-9]*\\.[0-9]*\)'`)
+    JAVA_VERSION=$( echo `expr "$JAVA_VERSION" : '\([0-9]*\\.[0-9]*\)'`)
 
     vercomp $JAVA_VERSION "1.7"
     if [ $? -eq 2 ]; then
@@ -125,6 +126,7 @@ function check_env {
 
     INSTALLER_GALAXY_PATH_CHECK=" "
     GALAXY_VERSION="($(hg log ~/galaxy-dist/ | head -n 1 | awk '{ print $2; }'))"
+    INSTALLER_GALAXY_BRANCH="$(cd $INSTALLER_GALAXY_PATH && hg branch)"
 
     if [ $? -ne 0 ]; then
         GALAXY_VERSION=""
@@ -139,7 +141,7 @@ function check_env {
     fi
 
     if [ "$INSTALLER_GALAXY_PATH_CHECK" = " " ]; then
-        print_item_good "galaxy" "$INSTALLER_GALAXY_PATH $GALAXY_VERSION"
+        print_item_good "galaxy" "$INSTALLER_GALAXY_PATH ($INSTALLER_GALAXY_BRANCH) $GALAXY_VERSION"
     else
         print_item_bad "galaxy" "$INSTALLER_GALAXY_PATH" "$INSTALLER_GALAXY_PATH_CHECK"
 	exit
@@ -260,7 +262,7 @@ function do_clean_prev_sse {
     echo "Removing previous installation of the SSE component..."
 
     MKDIR_RET=$(mkdir -p "$INSTALLER_PWD/backups")
-    print_item_good "backup" "'backups' directory successfully created"
+    print_item_good "mkdir" "'backups' directory successfully created"
 
     BAK_DATE=$(date +"%Y.%m.%d.%H.%M.%S")
     BAK_NAME="wsextensions.$BAK_DATE.tar.gz"
@@ -317,14 +319,14 @@ function do_patch_run_sh {
     RUN_ORIG="$INSTALLER_GALAXY_PATH/run.sh"
 
     MKDIR_RET=$(mkdir -p "$INSTALLER_PWD/backups")
-    print_item_good "backup" "'backups' directory successfully created"
+    print_item_good "mkdir" "'backups' directory successfully created"
 
     BAK_DATE=$(date +"%Y.%m.%d.%H.%M.%S")
     BAK_NAME="run.sh.$BAK_DATE"
     CP_RET=$(cp "$RUN_ORIG" "$INSTALLER_PWD/backups/$BAK_NAME")
     print_item_good "cp" "'backups/$BAK_NAME' successfully created"
 
-    HG_RET=$(hg revert -q "$RUN_ORIG")
+    HG_RET=$(hg revert -q "$RUN_ORIG" 2>&1)
     
     if [ HG_RET != "" ]; then
         HG_RET="'run.sh' successfully reverted"
@@ -335,12 +337,12 @@ function do_patch_run_sh {
     PATCH_DATE=$(date +"%Y.%m.%d.%H.%M.%S")
     PATCH_FILE="/tmp/run.sh.$PATCH_DATE.patch"
     
-    SED_PATH=$(echo "$$INSTALLER_GALAXY_PATH" | sed 's/\//\/\//g')
-    SED_RET=$(sed "s/_GALAXY_HOME/$SED_PATH/g" "$INSTALLER_PWD/patches/run.sh.patch.unready"> "$PATCH_FILE")
+    SED_PATH=$(echo "$INSTALLER_GALAXY_PATH" | sed 's/\//\\\//g')
+    SED_RET=$(sed -e "s/\_GALAXY_HOME/$SED_PATH/g" "$INSTALLER_PWD/patches/run.sh.patch.unready"> "$PATCH_FILE")
     
     print_item_good "sed" "'$PATCH_FILE' generated"
     
-    PATCH_RET=$(patch -f -b "$RUN_ORIG" < "$PATCH_FILE")
+    PATCH_RET=$(patch -f -b "$RUN_ORIG" < "$PATCH_FILE" 2> /dev/null | head -n 1)
     print_item_good "patch" "$PATCH_RET"
     
 } # do_patch_run_sh
