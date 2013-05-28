@@ -128,7 +128,7 @@
                             <p>
 
                                 <div id="suggestion-engine-results-progress" style="display:none;">
-                                    <img src="/static/images/yui/rel_interstitial_loading.gif" />
+                                    <img src="http://i.imgur.com/ubDvlIp.gif" />
                                 </div>
 
                                 <div id="suggestion-engine-results-content"></div>
