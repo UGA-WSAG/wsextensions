@@ -385,7 +385,7 @@ $.wsextensions.showInputDocDialog = function(node, name) {
     $.wsextensions.getJSON(request + "&callback=?", $.wsextensions.renderInputDocResponse, 30 * 1000);
 
     ## message to show
-    var msg = '<div id="wsx-suggest-doc-response"><img src="/static/images/yui/rel_interstitial_loading.gif" /></div>';
+    var msg = '<div id="wsx-suggest-doc-response"><img src="http://i.imgur.com/ubDvlIp.gif" /></div>';
     
     ## show the modal
     show_modal( 'Documentation for "' + op + " " + param + '"', msg, { "Close" : hide_modal } );
@@ -449,7 +449,7 @@ $.wsextensions.showInputSuggestDialog = function(node, name) {
     $.wsextensions.getJSON(request + "&callback=?", $.wsextensions.renderInputSuggestResponse, 5 * 1000);
 
     ## message to show
-    var msg = '<div id="wsx-suggest-values-response"><img src="/static/images/yui/rel_interstitial_loading.gif" /></div>';
+    var msg = '<div id="wsx-suggest-values-response"><img src="http://i.imgur.com/ubDvlIp.gif" /></div>';
     
     ## show the modal
     show_modal( 'Suggested Input Values for "' + wsop + ' ' + param + '"', msg, { "Close" : hide_modal } );
