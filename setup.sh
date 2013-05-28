@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# ------------------------------------------------------------
+# Installer Variables and Paths
+# ------------------------------------------------------------
 INSTALLER_TITLE="Galaxy Web Service Extensions"
 INSTALLER_PWD=$(pwd)
 INSTALLER_PATCH_PATH=""
@@ -7,13 +10,20 @@ INSTALLER_GALAXY_PATH="$(dirname $1)/$(basename $1)"
 INSTALLER_GALAXY_BRANCH=""
 INSTALLER_PYTHON_PATH=""
 INSTALLER_JAVA_PATH=""
-
 INSTALLER_SSE_PATH=""
 INSTALLER_WSX_PATH=""
 
+
+# ------------------------------------------------------------
+# Indicator Variables for Upgrade
+# ------------------------------------------------------------
 INSTALLER_UPGRADE_SSE=0
 INSTALLER_UPGRADE_WSX=0
 
+
+# ------------------------------------------------------------
+# Compare two versions
+# ------------------------------------------------------------
 function vercomp {
 
     # barrowed from http://stackoverflow.com/questions/4023830/bash-how-compare-two-strings-in-version-format
@@ -52,6 +62,16 @@ function vercomp {
 
 } # vercomp
 
+
+# ------------------------------------------------------------
+# Setup Environment
+# ------------------------------------------------------------
+
+
+
+# ------------------------------------------------------------
+# Setup Environment
+# ------------------------------------------------------------
 function check_python {
 
     PYTHON_CHECK=" "
