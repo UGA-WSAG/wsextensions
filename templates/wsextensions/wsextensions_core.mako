@@ -6,7 +6,7 @@
 <%
     wsextensions_product = "Service Suggestion Engine (SSE) Extensions"
     wsextensions_version = "1.6"
-    wsextensions_enpoint = "http://wsannotations.ctegd.uga.edu/SSE-WS/services"
+    wsextensions_enpoint = "http://zulu.ctegd.uga.edu:8080/SSE-WS/services"
 %>
 
 $.wsextensions = {};
@@ -268,23 +268,26 @@ $.wsextensions.getCandidateOps = function() {
     ## The name of the Tool sections where the Web Service Tools are located.
     ## @TODO make this an array, just in case.
     var candidateOpsSections = "Select Web Service Workflow Tool";
+    <%
+	candidateOpsSections = "Select Web Service Workflow Tool"
+    %>
 
     ## This array will hold the candidate operations.
     var candidateOps = [];
 
     ## Iterate over all the Tools in the Tool Panel
     %for section_key, section in app.toolbox.tool_panel.items():
-
+        <% 
+	    section_name  = getattr(section, 'name', 'nil')
+        %>
         ## Only consider the sections containing Web Service Tools
-        if ("${section.name}" == candidateOpsSections) {
-                
+	% if section_name == candidateOpsSections:      
             ## Iterate over the Tools in the current section that are both
             ## workflow compatible and not hidden.
             %for tool_key, tool in section.elems.items():
                 %if tool_key.startswith( 'tool' ):
                     %if not tool.hidden:
                         %if tool.is_workflow_compatible:
-
                             ## Parse the Web Service Tool and extract the
                             ## parameters that we need.
                             <%
@@ -294,18 +297,14 @@ $.wsextensions.getCandidateOps = function() {
                                 wsst = "%s" % wstool.inputs.get("servicetype", "")
                                 wstoolid = tool.id
                             %>
-
                             ## Push this Tool into our array
 			    var op = $.wsextensions.models.operation("${wsop}", "${wsurl}", "${wstoolid}");
-                            candidateOps.push(op);
-
+			    candidateOps.push(op);
                         %endif
                     %endif
                 %endif
             %endfor
-
-        } // if
-
+        %endif
     %endfor
 
     return candidateOps;
