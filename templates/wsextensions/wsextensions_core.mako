@@ -201,7 +201,7 @@ $('#suggestionEnginePredecessorList').change(function() {
         itm.remove();
     });
 
-    itm.css('background', 'url(/static/images/delete_icon.png) right center no-repeat');
+    itm.css('background', 'url(http://i.imgur.com/W7viN6O.png) right center no-repeat');
     itm.css('padding-right', '20px');
     $("#wsx-pred-list ul").append(itm);
 
@@ -219,7 +219,7 @@ $('#suggestionEngineSuccessorList').change(function() {
         itm.remove();
     });
 
-    itm.css('background', 'url(/static/images/delete_icon.png) right center no-repeat');
+    itm.css('background', 'url(http://i.imgur.com/W7viN6O.png) right center no-repeat');
     itm.css('padding-right', '20px');
     $("#wsx-succ-list ul").append(itm);
 
