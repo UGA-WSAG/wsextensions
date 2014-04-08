@@ -1,10 +1,6 @@
 # INSTALL
 
-## Web Service Extensions
-
-Installation instructions for the **Web Service Extensions** are coming soon.
-
-## Service Suggestion Extensions
+## SSE - Galaxy Integration Interface
 
 1. Merge the <code>templates</code> directory into your Galaxy distribution.
 
